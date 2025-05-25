@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - OrgSys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center">
+    <header class="w-full bg-[#6e101d] shadow-md p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-left pl-10 text-white">{{ member.f_name }} {{ member.m_name }} {{ member.l_name }}</h1>
+        <a href="/logout"><h3 class="text-2x; font-bold text-right pr-10 text-red-400">Logout</h3></a>
+    </header>
+
+    <div class="flex flex-1 w-full">
+        <!-- Side Drawer -->
+        <aside class="w-64 bg-white shadow-md p-4 flex flex-col">
+            <nav class="flex flex-col gap-4 h-full">
+                <a href="/mem_home" class="py-4 px-4 rounded hover:bg-blue-100 transition-colors font-medium w-full text-center {% if active_page == 'home' %}bg-blue-50 font-bold{% endif %}">Homepage</a>
+                <a href="/my_orgs" class="py-4 px-4 rounded hover:bg-blue-100 transition-colors font-medium w-full text-center {% if active_page == 'orgs' %}bg-blue-50 font-bold{% endif %}">My Organizations</a>
+                <a href="/my_fees" class="py-4 px-4 rounded hover:bg-blue-100 transition-colors font-medium w-full text-center {% if active_page == 'fees' %}bg-blue-50 font-bold{% endif %}">My Fees</a>
+            </nav>
+        </aside>
+        <main class="flex-grow flex items-center justify-center">
+            <!-- Default Homepage Content -->
+            <div class="bg-white rounded-lg shadow p-8 w-full max-w-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Welcome, {{ member.f_name }}!</h2>
+                <ul class="mb-4 text-gray-700">
+                    <li><span class="font-semibold">Student Number:</span> {{ member.std_num }}</li>
+                    <li><span class="font-semibold">Degree Program:</span> {{ member.degree_program }}</li>
+                    <li><span class="font-semibold">Gender:</span> {{ member.gender }}</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <footer class="w-full bg-white shadow-md p-4 mt-auto">
+        <p class="text-center text-gray-600">&copy; 2025 Tupperware. All rights reserved.</p>
+    </footer>
+</body>
+</html>

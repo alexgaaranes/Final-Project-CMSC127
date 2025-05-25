@@ -18,3 +18,16 @@ def get_member_from_org(org_name):
         """, (org_name, )
     )
     return cursor.fetchall()
+
+# Login member
+def login_member(mem_username, mem_password):
+    cursor = get_cursor()
+    cursor.execute(
+        """
+        SELECT *
+        FROM member
+        WHERE mem_username = %s
+        AND mem_password = %s;
+        """, (mem_username, mem_password)
+    )
+    return cursor.fetchone()

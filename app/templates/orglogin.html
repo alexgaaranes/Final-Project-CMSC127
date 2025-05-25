@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Login - OrgSys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center">
+    <header class="w-full bg-[#6e101d] shadow-md p-4 flex justify-between items-center">
+        <a href="/"><h1 class="text-2xl font-bold text-left pl-10 text-white">OrgSys by Tupperware</h1></a>
+        <a href="/registerorg"><h3 class="text-2x; font-bold text-right pr-10 text-blue-400"> Register an Org</h3></a>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center">
+        <div class="bg-white p-10 rounded-lg shadow-md w-full max-w-md">
+            <h2 class="text-xl font-semibold mb-4">Login as Organization</h2>
+            <form action="/orglogin" method="post">
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 mb-2">Org Email</label>
+                    <input type="email" id="email" name="email" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" name="password" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                </div>
+                <button type="submit"
+                        class="w-full bg-[#096911] text-white py-2 rounded hover:bg-[#075a0b] transition duration-200">Login</button>
+            </form>
+            <!-- If error from login occured-->
+            {% if error %}
+            <div class="mt-4 bg-red-100 text-red-700 p-3 rounded">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer class="w-full bg-white shadow-md p-4 mt-auto">
+        <p class="text-center text-gray-600">&copy; 2025 Tupperware. All rights reserved.</p>
+    </footer>
+</body>
+</html>
