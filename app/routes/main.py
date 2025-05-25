@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
 from app.models import org, member
+from datetime import date
 
 main_bp = Blueprint('main', __name__)
 
@@ -19,17 +20,19 @@ def index():
 def org_login():
     if 'org' in session:
         return redirect(url_for('main.org_home'))
-    return render_template('orglogin.html')
+    return render_template('org_login.html')
 
 @main_bp.route('/memlogin', methods=['GET'])
 def mem_login():
     if 'member' in session:
         return redirect(url_for('main.mem_home'))
-    return render_template('memlogin.html')
+    return render_template('mem_login.html')
 
 @main_bp.route('/registerorg', methods=['GET'])
 def org_register():
-    return render_template('orgregister.html')
+    if 'org' in session:
+        return redirect(url_for('main.org_home'))
+    return render_template('org_register.html')
 
 # Login POST Routes
 @main_bp.route('/orglogin', methods=['POST'])
@@ -44,7 +47,7 @@ def org_login_post():
             raise ValueError("Invalid Credentials")
         session['org'] = org_deets
     except Exception as e:
-        return render_template('orglogin.html', error=str(e))
+        return render_template('org_login.html', error=str(e))
     return redirect(url_for('main.org_home'))
 
 @main_bp.route('/memlogin', methods=['POST'])
@@ -58,7 +61,7 @@ def mem_login_post():
             raise ValueError("Invalid Credentials")
         session['member'] = mem_deets
     except Exception as e:
-        return render_template('memlogin.html', error=str(e))
+        return render_template('mem_login.html', error=str(e))
     return redirect(url_for('main.mem_home'))
 
 # Register POST Routes
@@ -79,20 +82,31 @@ def org_register_post():
                 err_msg = "Organization name or account already exists."
             case _:
                 err_msg = "An error occurred."
-        return render_template('orgregister.html', error=err_msg)
-    return render_template('orglogin.html', success="Organization registered successfully!")
+        return render_template('org_register.html', error=err_msg)
+    return render_template('org_login.html', success="Organization registered successfully!")
 
-# OTHER routes
-@main_bp.route('/org_home', methods=['GET'])
+# Org routes
+@main_bp.route('/org/home', methods=['GET'])
 def org_home():
     if 'org' not in session:
-        return redirect(url_for('main.orglogin'))
+        return redirect(url_for('main.org_login'))
     org_deets = session['org']
-    return render_template('org_dashboard.html', org=org_deets)
+    return render_template('org/org_dashboard.html', org=org_deets)
 
-@main_bp.route('/mem_home', methods=['GET'])
+@main_bp.route('/org/members', methods=['GET'])
+def org_members():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    members = member.get_member_from_org(org_name)
+    return render_template('org/org_members.html', org=org_deets, members=members)
+
+
+# Mem routes
+@main_bp.route('/mem/home', methods=['GET'])
 def mem_home():
     if 'member' not in session:
         return redirect(url_for('main.mem_login'))
     mem_deets = session['member']
-    return render_template('mem_dashboard.html', member=mem_deets)
+    return render_template('mem/mem_dashboard.html', member=mem_deets)
