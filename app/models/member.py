@@ -59,6 +59,26 @@ def login_member(mem_username, mem_password):
     return cursor.fetchone()
 
 
+# register a new student member
+def register_org(std_num, mem_username, mem_password, degree_program, gender, f_name, l_name, m_name):
+    cursor = get_cursor()
+    cursor.execute(
+        """
+        INSERT INTO member(mem_username, mem_password, degree_program, gender, f_name, l_name, m_name)
+        VALUES (%s, %s, %s, %s);
+        """, (std_num, mem_username, mem_password, degree_program, gender, f_name, l_name, m_name,)
+    )
+    cursor.execute(
+    """
+    SELECT *
+    FROM member 
+    """
+    )
+    print(cursor.fetchall())
+    get_conn().commit()
+
+
+
 # assign a member to the organization
 def add_org_member(std_num, org_name, mem_sem, mem_acad_year, batch, role, committee_name, status):
     cursor = get_cursor()
