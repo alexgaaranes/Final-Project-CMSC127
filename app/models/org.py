@@ -32,3 +32,32 @@ def login_org(org_account, org_password):
         """, (org_account, org_password)
     )
     return cursor.fetchone()
+
+# gets number of members depending on status
+def get_member_count(org_name, status):
+    cursor = get_cursor()
+    cursor.execute(
+        """
+        SELECT
+           count(*) AS "mem_count"
+        FROM member 
+        NATURAL JOIN organization_has_member 
+        WHERE org_name = %s
+        AND status = %s;
+        """, (org_name, status)
+    )
+    return cursor.fetchall()
+
+# will be used for filtering probably???
+def get_all_org_committees(org_name, ):
+    cursor = get_cursor()
+    cursor.execute(
+        """
+        SELECT DISTINCT
+          committee_name
+        FROM member 
+        NATURAL JOIN organization_has_member 
+        WHERE org_name = %s
+        """, (org_name, )
+    )
+    return cursor.fetchall()
