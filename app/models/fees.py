@@ -1,4 +1,4 @@
-from app.db import get_cursor
+from app.db import get_cursor, get_conn
 
 def get_all_fees(org_name, year = None, sem = None):
     cursor = get_cursor()
@@ -28,4 +28,24 @@ def get_all_fees(org_name, year = None, sem = None):
     )
     return cursor.fetchall()
 
+# add a new fee
+def add_org_fee(fee_name, amount, due_date, fee_sem, fee_acad_year, org_name):
+    cursor = get_cursor()
     
+    cursor.execute(
+        """
+        INSERT INTO 
+            member (fee_name, amount, due_date, fee_sem, fee_acad_year, org_name)
+        VALUES (%s, %s, %s, %s, %s, %s);
+        """, (fee_name, amount, due_date, fee_sem, fee_acad_year, org_name)
+    )
+    
+    cursor.execute(
+    """
+    SELECT *
+    FROM fee  
+    """
+    )
+    
+    print(cursor.fetchall())
+    get_conn().commit()

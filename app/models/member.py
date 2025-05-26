@@ -44,6 +44,7 @@ def get_member_from_org(org_name, committee = None, status = None, batch = None,
     )
     return cursor.fetchall()
 
+
 # Login member
 def login_member(mem_username, mem_password):
     cursor = get_cursor()
@@ -58,21 +59,30 @@ def login_member(mem_username, mem_password):
     return cursor.fetchone()
 
 
-# register a new org
-def add_member(org_name, org_account, org_password, date_formed):
+# assign a member to the organization
+def add_org_member(std_num, org_name, mem_sem, mem_acad_year, batch, role, committee_name, status):
     cursor = get_cursor()
+    
+    cursor.execute("select std_num from organization_has_member where std_num = 2024-01345")
+    if len(cursor.fetchall()) == 0:       
+        return "no student number found"
+    
+    
     cursor.execute(
-        """
-        INSERT INTO 
-            organization (org_name, org_account, org_password, date_formed)
-        VALUES (%s, %s, %s, %s);
-        """, (org_name, org_account, org_password, date_formed)
-    )
+            """
+            INSERT INTO 
+                organization_has_member 
+            VALUES (%s, %s, %s, %s, %s, %s);
+            """, (std_num, org_name, mem_sem, mem_acad_year, batch, role, committee_name, status)
+        )
+        
     cursor.execute(
     """
     SELECT *
-    FROM organization 
+    FROM organization_has_member  
     """
     )
+    
     print(cursor.fetchall())
     get_conn().commit()
+
