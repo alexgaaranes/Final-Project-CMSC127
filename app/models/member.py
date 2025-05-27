@@ -11,10 +11,8 @@ def get_member_from_org(org_name, committee = None, status = None, gender = None
     # by default have this in there 
     filters.append(' WHERE org_name = "'+org_name+'"')
     
-    # long ass query
 
-    query = "SELECT std_num, l_name, f_name, m_name, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member"   
-
+    query = "SELECT std_num, l_name, f_name, m_name, batch, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member "   
     
     if committee is not None:
         filters.append('AND committee_name = "'+committee+'"')
@@ -23,9 +21,9 @@ def get_member_from_org(org_name, committee = None, status = None, gender = None
     if status is not None:
         filters.append('AND status = "'+status+'"')
 
-    # # year number
-    # if batch is not None:
-    #     filters.append('AND batch = '+batch)
+    # year number
+    if batch is not None:
+        filters.append('AND batch = '+batch)
 
     
     if role is not None:

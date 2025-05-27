@@ -24,6 +24,38 @@
         <main class="flex-grow flex flex-col items-center justify-center p-8">
             <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-5xl">
                 <h2 class="text-xl font-semibold mb-6 text-gray-800">View Members</h2>
+                <!-- Filters -->
+                <div class="mb-6 flex justify-between items-center">
+                    <!--Role-->
+                    <div class="flex gap-4">
+                        <input type="text" placeholder="Search by name" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d] w-64">
+                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="resident-member">Resident Member</option>
+                            <option value="executive">Executive</option>
+                        </select>
+                    </div>
+                    <!--Status-->
+                    <div class="flex gap-4">
+                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="all">All</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <!--Sem and Acad Year -->
+                    <div class="flex gap-4">
+                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="1st-sem">1st Semester</option>
+                            <option value="2nd-sem">2nd Semester</option>
+                        </select>
+                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <!-- From founding date to present -->
+                            <option value="2023-2024">2023-2024</option>
+                            <option value="2024-2025">2024-2025</option>
+                            <option value="2025-2026">2025-2026</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="overflow-x-auto">
                     <!-- Create a table base on the sent data from the route (TODO: add filtering)-->
                     <table class="min-w-full bg-white border border-black rounded shadow">
