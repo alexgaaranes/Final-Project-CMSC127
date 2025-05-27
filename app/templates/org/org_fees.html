@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Members - OrgSys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center">
+    <header class="w-full bg-[#6e101d] shadow-md p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-left pl-10 text-white">{{ org.org_name }}</h1>
+        <a href="/logout"><h3 class="text-2x; font-bold text-right pr-10 text-red-400">Logout</h3></a>
+    </header>
+
+    <div class="flex flex-1 w-full">
+        <!-- Side Drawer -->
+        <aside class="w-64 bg-white shadow-lg p-4 flex flex-col">
+            <nav class="flex flex-col gap-4 h-full">
+                <a href="/org/home" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Homepage</a>
+                <a href="/org/members" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Members</a>
+                <a href="/org/funds" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Funds</a>
+                <a href="/org/fees" class="py-4 px-4 bg-green-200 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Fees</a>
+            </nav>
+        </aside>
+        <main class="flex-grow flex flex-col items-center justify-center p-8">
+            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-5xl">
+                <div class="flex justify-between items-center flex-row">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-800">View Fees</h2>
+                </div>
+                <form action="/org/fees" method="post">
+                    <div class="mb-6 flex justify-between items-center">
+                    <div class="flex gap-4">
+                        
+                        <!--Sem and Acad Year -->
+                        <select id="sem" name="sem" class="px-3 py-2 h-10 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="all">All Semesters</option>
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
+                        </select>
+                
+                        
+                        <!-- Year -->
+                        <div>
+                            <label class="block font-medium mb-1">Year Range</label>
+                            <div class="flex gap-2">
+                                <input id="start" name="start" type="number" name="year_start" min="1900" max="2100" placeholder="Start Year" 
+                                class="border rounded px-2 py-1 w-20" required>
+                                <span class="self-center">-</span>
+                                <input id="end" name="end" type="number" name="year_end" min="2000" max="2100" placeholder="End Year" class="border rounded px-2 py-1 w-20" required>
+                            </div>
+                        </div>
+
+                    </div>
+                    <button type="submit" class="py-2 px-4 bg-emerald-500 text-white rounded hover:bg-emerald-700">Filter</button>
+                 
+                </div>
+                
+
+                </form>
+
+                <div class="overflow-x-auto">
+                    <!-- Create a table base on the sent data from the route (TODO: add filtering)-->
+                    <table class="min-w-full bg-white border border-black rounded shadow">
+                        <caption class="caption-bottom text-gray-700 font-semibold mb-3">
+                            <span class="text-xs text-gray-500 p-3">Showing {{ fees|length }} fees</span>
+                        </caption>
+                        <thead>
+                            <tr class="bg-green-200 text-sm">
+                                <th class="py-2 px-4 border-b text-sm">Fee Id</th>
+                                <th class="py-2 px-4 border-b text-sm">Fee Name</th>
+                                <th class="py-2 px-4 border-b text-sm">Amount</th>
+                                <th class="py-2 px-4 border-b text-sm">Due Date</th>
+                                <th class="py-2 px-4 border-b text-sm">Semester</th>
+                                <th class="py-2 px-4 border-b text-sm">Academic Year</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fee in fees %}
+                            <tr class="hover:bg-red-50 text-sm">
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_id }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_name }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.amount }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.due_date }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_sem }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_acad_year }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="10" class="py-4 px-4 text-center text-gray-500 text-sm">No Fees found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        
+        </main>
+    </div>
+
+    <footer class="w-full bg-white shadow-md p-4 mt-auto">
+        <p class="text-center text-gray-600">&copy; 2025 Tupperware. All rights reserved.</p>
+    </footer>
+</body>
+<script type="text/javascript">
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('hidden');
+    }
+
+    // put click event and pass the data for editing and adding
+    document.querySelectorAll('.edit-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const member = JSON.parse(button.getAttribute('data-member'));
+            openEditModal(member);
+        });
+    });
+
+    document.querySelectorAll('.add-button').forEach(button => {
+        button.addEventListener('click', () => {
+            openAddModal();
+        })
+    })
+
+
+    filters = JSON.parse('{{ filter|tojson|safe }}')
+    document.getElementById("sem").value = filters[0]
+    document.getElementById("start").value = filters[1]
+    document.getElementById("end").value = filters[2]
+
+
+</script>
+</html>

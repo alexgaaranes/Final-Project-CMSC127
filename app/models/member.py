@@ -1,6 +1,8 @@
 from app.db import get_cursor, get_conn
 
-def get_member_from_org(org_name, committee = None, status = None, gender = None, role = None, start = None, end = None):
+
+def get_member_from_org(org_name, sem = "all", committee = "all", status = "all", batch = "all", std_num = None, role = "all", start = None, end = None):
+
     cursor = get_cursor()
     
     # array of filters
@@ -9,30 +11,35 @@ def get_member_from_org(org_name, committee = None, status = None, gender = None
     # by default have this in there 
     filters.append(' WHERE org_name = "'+org_name+'"')
     
-    # long ass query
-    query = "SELECT std_num, l_name, f_name, m_name, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member"   
+
+    query = "SELECT std_num, l_name, f_name, m_name, batch, mem_sem, mem_acad_year, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member "   
     
-    if committee is not None:
+    
+    if sem != "all" and sem is not None:
+        filters.append('AND mem_sem = "'+sem+'"')
+    
+    if committee != "all" and committee is not None:
         filters.append('AND committee_name = "'+committee+'"')
     
     # active, inactive, alumni
-    if status is not None:
+    if status != "all" and status is not None:
         filters.append('AND status = "'+status+'"')
 
-    # # year number
-    # if batch is not None:
-    #     filters.append('AND batch = '+batch)
+    # year number
+    if batch != "all" and batch is not None:
+        filters.append('AND batch = '+batch)
+
     
-    if role is not None:
+    if role != "all" and role is not None:
         filters.append('AND role = "'+role+'"')
-        
-    # M or F pero ? ung rn
-    if gender is not None:
-        filters.append('AND gender = "'+gender+'"')
+
+
+    if std_num is not None and len(std_num) == 10:
+        filters.append('AND std_num = "'+std_num+'"')
     
     # should place YEAR  
     if start is not None and end is not None:
-        filters.append('AND (CAST(substring(mem_acad_year, 1, 4) AS int)) BETWEEN'+start+' AND '+end)
+        filters.append('AND (CAST(substring(mem_acad_year, 1, 4) AS int)) BETWEEN '+start+' AND '+end)
     
     # joining of all filters togther
     query += "".join(filters) 
@@ -42,38 +49,55 @@ def get_member_from_org(org_name, committee = None, status = None, gender = None
     cursor.execute(
         query
     )
-  
+
     return cursor.fetchall()
 
 
 # Login member
 def login_member(mem_username, mem_password):
+
     cursor = get_cursor()
     cursor.execute(
         """
         SELECT *
         FROM member
-        WHERE mem_username = %s
+        WHERE std_num = %s
         AND mem_password = %s;
         """, (mem_username, mem_password)
     )
     return cursor.fetchone()
 
 
-# register a new student member
-def register_org(std_num, mem_username, mem_password, degree_program, gender, f_name, l_name, m_name):
+# Login member
+def delete_member(org_name, std_num):
+
     cursor = get_cursor()
     cursor.execute(
         """
-        INSERT INTO member(mem_username, mem_password, degree_program, gender, f_name, l_name, m_name)
-        VALUES (%s, %s, %s, %s);
-        """, (std_num, mem_username, mem_password, degree_program, gender, f_name, l_name, m_name,)
+        DELETE 
+        FROM organization_has_member
+        WHERE std_num = %s AND
+        org_name = %s;
+        """, (std_num, org_name)
+    )
+    get_conn().commit()
+
+
+# register a new student member
+def add_member(std_num, mem_password, degree_program, gender, f_name, l_name, m_name):
+    cursor = get_cursor()
+    cursor.execute(
+        """
+        INSERT INTO member(std_num, mem_password, degree_program, gender, f_name, l_name, m_name)
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
+        """, (std_num, mem_password, degree_program, gender, f_name, l_name, m_name,)
     )
     cursor.execute(
     """
     SELECT *
     FROM member 
     """
+
     )
     print(cursor.fetchall())
     get_conn().commit()
@@ -82,7 +106,8 @@ def register_org(std_num, mem_username, mem_password, degree_program, gender, f_
 def add_org_member(std_num, org_name, mem_sem, mem_acad_year, batch, role, committee_name, status):
     cursor = get_cursor()
     
-    cursor.execute("select std_num from organization_has_member where std_num = 2024-01345")
+    print(std_num)
+    cursor.execute("SELECT std_num FROM member WHERE std_num = %s", (std_num,))
     if len(cursor.fetchall()) == 0:       
         return "no student number found"
     
@@ -91,7 +116,7 @@ def add_org_member(std_num, org_name, mem_sem, mem_acad_year, batch, role, commi
             """
             INSERT INTO 
                 organization_has_member 
-            VALUES (%s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
             """, (std_num, org_name, mem_sem, mem_acad_year, batch, role, committee_name, status)
         )
         
@@ -134,6 +159,7 @@ def get_member_fee(std_num):
 
     return cursor.fetchall()
 
+
 #view member's unpaid fees by org
 def get_member_unpaid_fee(std_num, org_name):
     cursor = get_cursor()
@@ -148,3 +174,20 @@ def get_member_unpaid_fee(std_num, org_name):
 
     return cursor.fetchall()
 
+# edit member
+def edit_org_member(std_num, org_name, mem_sem, mem_acad_year, role, committee_name, status):
+    cursor = get_cursor()
+    cursor.execute(
+        """
+        UPDATE organization_has_member
+        SET role = %s,
+            committee_name = %s,
+            status = %s
+        WHERE std_num = %s
+          AND org_name = %s
+          AND mem_sem = %s
+          AND mem_acad_year = %s
+        """,
+        (role, committee_name, status, std_num, org_name, mem_sem, mem_acad_year)
+    )
+    get_conn().commit()
