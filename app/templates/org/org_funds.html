@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Funds - OrgSys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center">
+    <header class="w-full bg-[#6e101d] shadow-md p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-left pl-10 text-white">{{ org.org_name }}</h1>
+        <a href="/logout"><h3 class="text-2x; font-bold text-right pr-10 text-red-400">Logout</h3></a>
+    </header>
+
+    <div class="flex flex-1 w-full">
+        <!-- Side Drawer -->
+        <aside class="w-64 bg-white shadow-lg p-4 flex flex-col">
+            <nav class="flex flex-col gap-4 h-full">
+                <a href="/org/home" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Homepage</a>
+                <a href="/org/members" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Members</a>
+                <a href="/org/funds" class="py-4 px-4 rounded bg-green-200 font-bold transition-colors w-full text-center">Funds</a>
+            </nav>
+        </aside>
+        <main class="flex-grow flex flex-col items-center justify-start p-8 gap-8">
+
+            <!-- Add Fee Section -->
+            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-4xl mb-4">
+                <h3 class="text-xl font-semibold mb-4">Add Fee</h3>
+                <form method="post" action="/org/add_fee" class="flex flex-wrap gap-4 items-end">
+                    <div>
+                        <label class="block font-medium mb-1" for="fee_name">Fee Name</label>
+                        <input type="text" id="fee_name" name="fee_name" class="border rounded px-2 py-1 w-40" required>
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1" for="fee_amount">Amount (₱)</label>
+                        <input type="number" id="fee_amount" name="fee_amount" class="border rounded px-2 py-1 w-32" min="1" step="0.01" required>
+                    </div>
+                    <div>
+                        <label class="block  font-medium mb-1" for="fee_due_date">Due Date</label>
+                        <input type="date" id="fee_due_date" name="fee_due_date" class="border rounded px-2 py-1 w-40" required>
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1" for="fee_semester">Semester</label>
+                        <select id="fee_semester" name="fee_semester" class="border rounded px-2 py-1 w-32" required>
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1">Academic Year</label>
+                        <div class="flex gap-2">
+                            <input type="number" name="fee_year_start" min="1500" max="2100" placeholder="Start" class="border rounded px-2 py-1 w-20" required>
+                            <span class="self-center">-</span> 
+                            <input type="number" name="fee_year_end" min="1500" max="2100" placeholder="End" class="border rounded px-2 py-1 w-20" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Add Fee</button>
+                </form>
+            </div>
+
+            <!-- Total Unpaid and paid-->
+            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-4xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Total Amount of Fee</h3>
+                    <form action="/org/total_as_of" method="get" class="flex gap-2">
+                        <p class="font-medium mt-1">As of:</p>
+                        <input type="date" name="as_of_date" value="{{ as_of_date }}" class="border rounded px-2 py-1" required>
+                        <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Filter</button>
+                    </form>
+                </div>
+                <div class="flex gap-8">
+                    <div class="mr-10">
+                        <h4 class="font-semibold">Unpaid</h4>
+                        <p class="text-2xl font-bold">₱{{ total_unpaid if total_unpaid else '0'  }}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Paid</h4>
+                        <p class="text-2xl font-bold">₱{{ total_paid if total_paid else '0' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unpaid Members Card -->
+            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-4xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Member(s) with Unpaid Fees</h3>
+                    <form action="/org/unpaid_mems" method="get" class="flex gap-4 items-end">
+                        <div>
+                            <label class="block font-medium mb-1" for="unpaid_semester">Semester</label>
+                            <select id="unpaid_semester" name="unpaid_semester" class="border rounded px-2 py-1 w-32" required>
+                                <option value="1">1st Semester</option>
+                                <option value="2">2nd Semester</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">Academic Year</label>
+                            <div class="flex gap-2">
+                                <input type="number" name="unpaid_year_start" min="1500" max="2100" placeholder="Start" class="border rounded px-2 py-1 w-20" required value="{{ unpaid_selected_year_start }}">
+                                <span class="self-center">-</span>
+                                <input type="number" name="unpaid_year_end" min="1500" max="2100" placeholder="End" class="border rounded px-2 py-1 w-20" required value="{{ unpaid_selected_year_end }}">
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Filter</button>
+                    </form>
+                </div>
+
+                <!-- Member Table -->
+                <table class="min-w-full mb-2">
+                    <thead>
+                        <tr class="bg-red-100">
+                            <th class="py-2 px-4 text-left">Student Number</th>
+                            <th class="py-2 px-4 text-left">Full Name</th>
+                            <th class="py-2 px-4 text-left">Fee id</th>
+                            <th class="py-2 px-4 text-left">Amount Due</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in unpaid_members %}
+                        <tr>
+                            <td class="py-2 px-4">{{ member.std_num }}</td>
+                            <td class="py-2 px-4">{{ member.name }}</td>
+                            <td class="py-2 px-4">{{ member.fee_id }}</td>
+                            <td class="py-2 px-4">₱{{ member.amount }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="py-2 px-4 text-gray-500">No members to display.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Late Payments Card -->
+            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-4xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Late Payments</h3>
+                    <form action="/org/late_payments" method="get" class="flex gap-4 items-end">
+                        <div>
+                            <label class="block font-medium mb-1" for="late_semester">Semester</label>
+                            <select id="late_semester" name="late_semester" class="border rounded px-2 py-1 w-32" required>
+                                <option value="1">1st Semester</option>
+                                <option value="2">2nd Semester</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">Academic Year</label>
+                            <div class="flex gap-2">
+                                <input type="number" name="late_year_start" min="1500" max="2100" placeholder="Start" class="border rounded px-2 py-1 w-20" required value="{{ late_selected_year_start }}">
+                                <span class="self-center">-</span>
+                                <input type="number" name="late_year_end" min="1500" max="2100" placeholder="End" class="border rounded px-2 py-1 w-20" required value="{{ late_selected_year_end }}">
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Filter</button>
+                    </form>
+                </div>
+                <!-- Member Table -->
+                <table class="min-w-full mb-2">
+                    <thead>
+                        <tr class="bg-red-100">
+                            <th class="py-2 px-4 text-left">Student Number</th>
+                            <th class="py-2 px-4 text-left">Full Name</th>
+                            <th class="py-2 px-4 text-left">Amount Paid</th>
+                            <th class="py-2 px-4 text-left">Date Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in late_payments %}
+                        <tr>
+                            <td class="py-2 px-4">{{ payment.std_num }}</td>
+                            <td class="py-2 px-4">{{ payment.name }}</td>
+                            <td class="py-2 px-4">₱{{ payment.amount }}</td>
+                            <td class="py-2 px-4">{{ payment.paid_date }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="py-2 px-4 text-gray-500">No late payments recorded.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Highest Debt -->
+            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-4xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Member(s) with Highest Debt</h3>
+                    <form action="/org/highest_debt_mems" method="get" class="flex gap-4 items-end">
+                        <div>
+                            <label class="block font-medium mb-1" for="debt_semester">Semester</label>
+                            <select id="debtor_semester" name="debt_semester" class="border rounded px-2 py-1 w-32" required>
+                                <option value="1">1st Semester</option>
+                                <option value="2">2nd Semester</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">Academic Year</label>
+                            <div class="flex gap-2">
+                                <input type="number" name="debt_year_start" min="1500" max="2100" placeholder="Start" class="border rounded px-2 py-1 w-20" required value="{{ debt_selected_year_start }}">
+                                <span class="self-center">-</span>
+                                <input type="number" name="debt_year_end" min="1500" max="2100" placeholder="End" class="border rounded px-2 py-1 w-20" required value="{{ debt_selected_year_end }}">
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Filter</button>
+                    </form>
+                </div>
+                <!-- Member Table -->
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="bg-red-100">
+                            <th class="py-2 px-4 text-left">Student Number</th>
+                            <th class="py-2 px-4 text-left">Full Name</th>
+                            <th class="py-2 px-4 text-left">Amount Due</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in debt_members %}
+                        <tr>
+                            <td class="py-2 px-4">{{ member.std_num }}</td>
+                            <td class="py-2 px-4">{{ member.name }}</td>
+                            <td class="py-2 px-4">₱{{ member.total_debt }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="py-2 px-4 text-gray-500">No member to display.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="w-full bg-white shadow-md p-4 mt-auto">
+        <p class="text-center text-gray-600">&copy; 2025 Tupperware. All rights reserved.</p>
+    </footer>
+</body>
+</html>
