@@ -165,3 +165,25 @@ def mem_fees():
     print(result)
     return render_template('mem/mem_fees.html', member=mem_deets, fees=result)
 
+# Org add member post req
+@main_bp.route('/org/add_member', methods=['POST'])
+def org_add_mem():
+    # Insert Query
+    org_deets = session['org']
+    member_data = request.form
+
+    print(member_data)
+    # Details for organization_has_member tuple
+    org_name = org_deets['org_name']
+    std_num = member_data['std-num'] 
+    role = member_data['role']
+    sem = member_data['sem']
+    ay = member_data['ay']
+    status = member_data['status']
+    batch = member_data['batch']
+    committee = member_data['committee']
+
+    result = member.add_org_member(std_num, org_name, sem, ay, batch, role, committee, status)    
+    print(result)
+
+    return redirect(url_for('main.org_members'))

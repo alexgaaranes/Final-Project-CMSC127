@@ -88,7 +88,8 @@ def add_member(std_num, mem_password, degree_program, gender, f_name, l_name, m_
 def add_org_member(std_num, org_name, mem_sem, mem_acad_year, batch, role, committee_name, status):
     cursor = get_cursor()
     
-    cursor.execute("select std_num from organization_has_member where std_num = 2024-01345")
+    print(std_num)
+    cursor.execute("SELECT std_num FROM member WHERE std_num = %s", (std_num,))
     if len(cursor.fetchall()) == 0:       
         return "no student number found"
     
@@ -97,7 +98,7 @@ def add_org_member(std_num, org_name, mem_sem, mem_acad_year, batch, role, commi
             """
             INSERT INTO 
                 organization_has_member 
-            VALUES (%s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
             """, (std_num, org_name, mem_sem, mem_acad_year, batch, role, committee_name, status)
         )
         

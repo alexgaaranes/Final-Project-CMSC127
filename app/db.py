@@ -28,7 +28,6 @@ def initialize_db(config):
     _cursor.execute("""
     CREATE TABLE IF NOT EXISTS member(
         std_num CHAR(10),
-        mem_username VARCHAR(20) UNIQUE NOT NULL,
         mem_password VARCHAR(30),
         degree_program VARCHAR(50) NOT NULL,
         gender VARCHAR(10),
