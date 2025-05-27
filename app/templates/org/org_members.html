@@ -20,7 +20,6 @@
                 <a href="/org/members" class="py-4 px-4 bg-green-200 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Members</a>
                 <a href="/org/funds" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Funds</a>
                 <a href="/org/fees" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center {% if active_page == 'funds' %}bg-green-200 font-bold{% endif %}">Fees</a>
-
             </nav>
         </aside>
         <main class="flex-grow flex flex-col items-center justify-center p-8">
@@ -34,33 +33,49 @@
                 <div class="mb-6 flex justify-between items-center">
                     <!--Role-->
                     <div class="flex gap-4">
-                        <select id="role" name="role" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d] onChange">
+                        <select id="role" name="role" class="px-3 py-2 h-10 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d] onChange">
                             <option value="all">All Member Roles</option>
                             <option value="resident-member">Resident Member</option>
                             <option value="executive">Executive</option>
                         </select>
+
                         <!--Sem and Acad Year -->
-                        <select id="sem" name="sem" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                        <select id="sem" name="sem" class="px-3 py-2 h-10 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
                             <option value="all">All Semesters</option>
                             <option value="1">1st Semester</option>
                             <option value="2">2nd Semester</option>
                         </select>
                   
+
                         <!--Status-->
-                        <select id="status" name="status" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                        <select id="status" name="status" class="px-3 py-2 h-10 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
                             <option value="all">All Status</option>
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                             <option value="alumni">Alumni</option>
                         </select>
-                         <select id="committee" name="committee" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+
+                        <!-- Committee -->
+                        <select id="committee" name="committee" class="px-3 py-2 h-10 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
                             <option value="all">All Committees</option>
                             {% for com in coms %}
                             <option value="{{ com.committee_name }}">{{ com.committee_name }}</option>
                             {% else %}
                             
                             {% endfor %}
-                        </select>                       
+                        </select> 
+                        
+                        <!-- Year -->
+                        <div>
+                            <label class="block font-medium mb-1">Year Range</label>
+                            <div class="flex gap-2">
+                                <input id="start" name="start" type="number" name="year_start" min="1900" max="2099" placeholder="Start Year" 
+                                class="border rounded px-2 py-1 w-20" required>
+                                <span class="self-center">-</span>
+                                <input id="end" name="end" type="number" name="year_end" min="1901" max="2100" placeholder="End Year" class="border rounded px-2 py-1 w-20" required ">
+                            </div>
+                        </div>
+
                     </div>
                     <button type="submit" class="py-2 px-4 bg-emerald-500 text-white rounded hover:bg-emerald-700">Filter</button>
                  
@@ -241,7 +256,8 @@
     document.getElementById("sem").value = filters[1]
     document.getElementById("status").value = filters[2]
     document.getElementById("committee").value = filters[3]
-
+    document.getElementById("start").value = filters[4]
+    document.getElementById("end").value = filters[5]
 
 </script>
 </html>

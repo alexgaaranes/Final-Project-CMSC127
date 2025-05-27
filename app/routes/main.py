@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
-from app.models import org, member
+from app.models import org, member, fees
 from datetime import date
 
 main_bp = Blueprint('main', __name__)
@@ -126,6 +126,7 @@ def org_home():
     org_deets = session['org']
     return render_template('org/org_dashboard.html', org=org_deets)
 
+# Members
 @main_bp.route('/org/members', methods=['GET', 'POST'])
 def org_members():
     if 'org' not in session:
@@ -137,19 +138,42 @@ def org_members():
     
     role = request.form.get('role')
     sem = request.form.get('sem')
-    # year = request.form.get('year') if request.form.get('year') != "all" else None
     status = request.form.get('status') 
     committee = request.form.get('committee')
+    start = request.form.get('start')
+    end = request.form.get('end')
     
     print(committee)
     
-    if role is None:
-        filter = ["all", "all", "all", "all"]
+    if role is None or sem is None or status is None or committee is None or start is None or end is None:
+        filter = ["all", "all", "all", "all", 1900, 2100]
     else:
-        filter = [role, sem, status, committee]
+        filter = [role, sem, status, committee, start, end]
         
-    members = member.get_member_from_org(org_name, role=role, status=status, sem=sem)
+    members = member.get_member_from_org(org_name, role=role, status=status, sem=sem, start=start, end=end)
     return render_template('org/org_members.html', org=org_deets, members=members, filter=filter, coms = coms)
+
+
+# Fees
+@main_bp.route('/org/fees', methods=['GET', 'POST'])
+def org_fees():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']    
+    
+    sem = request.form.get('sem')
+    start = request.form.get('start')
+    end = request.form.get('end')
+
+    if sem is None or start is None or end is None:
+        filter = ["all", 1900, 2100]
+    else:
+        filter = [sem, start, end]
+    
+    fee = fees.get_all_fees(org_name, sem=sem, start=start, end=end)
+    print(fee)
+    return render_template('org/org_fees.html', org=org_deets, fees=fee, filter=filter)
 
 
 # Mem routes

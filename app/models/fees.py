@@ -1,6 +1,6 @@
 from app.db import get_cursor, get_conn
 
-def get_all_fees(org_name, year = None, sem = None):
+def get_all_fees(org_name, sem = None, start= None, end = None):
     cursor = get_cursor()
     
     # array of filters
@@ -10,10 +10,10 @@ def get_all_fees(org_name, year = None, sem = None):
     filters.append(' WHERE org_name = "'+org_name+'"')
     
     # long ass query
-    query = "SELECT fee_id,fee_name, amount, due_date, fee_sem, fee_acad_year FROM fee NATURAL JOIN organization "   
+    query = "SELECT fee_id, fee_name, amount, due_date, fee_sem, fee_acad_year FROM fee "   
     
-    if year is not None:
-        filters.append('AND fee_acad_year = '+year)
+    if start is not None and end is not None:
+        filters.append('AND (CAST(substring(fee_acad_year, 1, 4) AS int)) BETWEEN '+start+' AND '+end)
     
     if sem is not None:
         filters.append('AND fee_sem = '+sem)
