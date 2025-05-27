@@ -15,8 +15,8 @@ def get_all_fees(org_name, sem = None, start= None, end = None):
     if start is not None and end is not None:
         filters.append('AND (CAST(substring(fee_acad_year, 1, 4) AS int)) BETWEEN '+start+' AND '+end)
     
-    if sem is not None:
-        filters.append('AND fee_sem = '+sem)
+    if sem != all and sem is not None:
+        filters.append(' AND fee_sem = '+sem)
     
     # adding the filters together
     query += "".join(filters) 

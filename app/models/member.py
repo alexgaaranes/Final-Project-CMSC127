@@ -34,7 +34,7 @@ def get_member_from_org(org_name, sem = "all", committee = "all", status = "all"
         filters.append('AND role = "'+role+'"')
 
 
-    if std_num is not None:
+    if std_num is not None and len(std_num) == 10:
         filters.append('AND std_num = "'+std_num+'"')
     
     # should place YEAR  

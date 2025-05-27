@@ -146,7 +146,7 @@ def org_members():
     print(committee)
     
     if role is None or sem is None or status is None or committee is None or start is None or end is None:
-        filter = ["all", "all", "all", "all", 1900, 2100, ""]
+        filter = ["all", "all", "all", "all", 1900, 2100, None]
     else:
         filter = [role, sem, status, committee, start, end, std_num]
         
