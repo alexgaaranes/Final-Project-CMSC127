@@ -23,38 +23,43 @@
         </aside>
         <main class="flex-grow flex flex-col items-center justify-center p-8">
             <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-5xl">
-                <h2 class="text-xl font-semibold mb-6 text-gray-800">My Organizations</h2>
+                <h2 class="text-xl font-semibold mb-6 text-gray-800">My Fees</h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white border border-black rounded shadow">
                         <caption class="caption-bottom text-gray-700 font-semibold mb-3">
-                            <span class="text-xs text-gray-500 p-3">Showing {{ orgs|length }} organizations</span>
+                            <span class="text-xs text-gray-500 p-3">Showing {{ fees|length }} Fees</span>
                         </caption>
                         <thead>
                             <tr class="bg-green-200 text-sm">
                                 <th class="py-2 px-4 border-b text-sm">Student Number</th>
+                                <th class="py-2 px-4 border-b text-sm">Fee id</th>
+                                <th class="py-2 px-4 border-b text-sm">Fee name</th>
+                                <th class="py-2 px-4 border-b text-sm">Amount</th>
+                                <th class="py-2 px-4 border-b text-sm">Due date</th>
+                                <th class="py-2 px-4 border-b text-sm">Date paid</th>
+                                <th class="py-2 px-4 border-b text-sm">Semester</th>
+                                <th class="py-2 px-4 border-b text-sm">Academic Year</th>
                                 <th class="py-2 px-4 border-b text-sm">Organization name</th>
-                                <th class="py-2 px-4 border-b text-sm">Semester joined</th>
-                                <th class="py-2 px-4 border-b text-sm">Academic Year joined</th>
-                                <th class="py-2 px-4 border-b text-sm">Role</th>
-                                <th class="py-2 px-4 border-b text-sm">Committee name</th>
                                 <th class="py-2 px-4 border-b text-sm">Status</th>
-                                
                             </tr>
                         </thead>
                         <tbody>
-                            {% for org in orgs %}
+                            {% for fee in fees %}
                             <tr class="hover:bg-red-50 text-sm">
-                                <td class="py-2 px-4 border-b text-sm">{{ org.std_num }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.org_name }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.mem_sem }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.mem_acad_year }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.role }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.committee_name }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.status }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.std_num }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_id }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_name }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.amount }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.due_date }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.paid_date }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_sem }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_acad_year }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.org_name }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ fee.status }}</td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="10" class="py-4 px-4 text-center text-gray-500 text-sm">No Organizations found.</td>
+                                <td colspan="10" class="py-4 px-4 text-center text-gray-500 text-sm">No Fees found.</td>
                             </tr>
                             {% endfor %}
                         </tbody>

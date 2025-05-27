@@ -28,6 +28,13 @@ def mem_login():
         return redirect(url_for('main.mem_home'))
     return render_template('mem_login.html')
 
+
+@main_bp.route('/memregister', methods=['GET'])
+def mem_register():
+    if 'member' in session:
+        return redirect(url_for('main.mem_home'))
+    return render_template('mem_register.html')
+
 @main_bp.route('/registerorg', methods=['GET'])
 def org_register():
     if 'org' in session:
@@ -85,6 +92,32 @@ def org_register_post():
         return render_template('org_register.html', error=err_msg)
     return render_template('org_login.html', success="Organization registered successfully!")
 
+@main_bp.route('/registermember', methods=['POST'])
+def member_register_post():
+    std_num = request.form.get('std_num')
+    mem_password = request.form.get('password')
+    degree_program = request.form.get('degree_program')
+    gender = request.form.get('sex')
+    f_name = request.form.get('first')
+    l_name = request.form.get('last')
+    m_name = request.form.get('middle')
+
+    try:
+        member.add_member(std_num, mem_password, degree_program, gender, f_name, l_name, m_name)
+    except Exception as e:
+        print(e)
+        err_code = int(str(e).split(' ')[0])
+        err_msg = None
+        match err_code:
+            case 1062:
+                err_msg = "Organization name or account already exists."
+            case 4025:
+                err_msg = "Please follow the specified format for student number"
+            case _:
+                err_msg = "An error occurred."
+        return render_template('mem_register.html', error=err_msg)
+    return render_template('mem_login.html', success="Account registered successfully!")
+
 # Org routes
 @main_bp.route('/org/home', methods=['GET'])
 def org_home():
@@ -109,4 +142,26 @@ def mem_home():
     if 'member' not in session:
         return redirect(url_for('main.mem_login'))
     mem_deets = session['member']
+
     return render_template('mem/mem_dashboard.html', member=mem_deets)
+
+
+@main_bp.route('/mem/orgs', methods=['GET'])
+def mem_orgs():
+    if 'member' not in session:
+        return redirect(url_for('main.mem_login'))
+    mem_deets = session['member']
+    std_num = mem_deets['std_num']
+    result = member.get_member_org(std_num)
+    return render_template('mem/mem_orgs.html', member=mem_deets, orgs=result)
+
+@main_bp.route('/mem/fees', methods=['GET'])
+def mem_fees():
+    if 'member' not in session:
+        return redirect(url_for('main.mem_login'))
+    mem_deets = session['member']
+    std_num = mem_deets['std_num']
+    result = member.get_member_fee(std_num)
+    print(result)
+    return render_template('mem/mem_fees.html', member=mem_deets, fees=result)
+
