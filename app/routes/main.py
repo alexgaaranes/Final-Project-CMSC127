@@ -28,12 +28,12 @@ def mem_login():
         return redirect(url_for('main.mem_home'))
     return render_template('mem_login.html')
 
+
 @main_bp.route('/memregister', methods=['GET'])
 def mem_register():
     if 'member' in session:
         return redirect(url_for('main.mem_home'))
     return render_template('mem_register.html')
-
 
 @main_bp.route('/registerorg', methods=['GET'])
 def org_register():
@@ -118,8 +118,6 @@ def member_register_post():
         return render_template('mem_register.html', error=err_msg)
     return render_template('mem_login.html', success="Account registered successfully!")
 
-
-
 # Org routes
 @main_bp.route('/org/home', methods=['GET'])
 def org_home():
@@ -135,7 +133,6 @@ def org_members():
     org_deets = session['org']
     org_name = org_deets['org_name']
     members = member.get_member_from_org(org_name)
-    print(members)
     return render_template('org/org_members.html', org=org_deets, members=members)
 
 
@@ -145,6 +142,7 @@ def mem_home():
     if 'member' not in session:
         return redirect(url_for('main.mem_login'))
     mem_deets = session['member']
+
     return render_template('mem/mem_dashboard.html', member=mem_deets)
 
 
@@ -166,3 +164,4 @@ def mem_fees():
     result = member.get_member_fee(std_num)
     print(result)
     return render_template('mem/mem_fees.html', member=mem_deets, fees=result)
+

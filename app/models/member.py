@@ -1,6 +1,8 @@
 from app.db import get_cursor, get_conn
 
+
 def get_member_from_org(org_name, committee = None, status = None, gender = None, role = None, start = None, end = None):
+
     cursor = get_cursor()
     
     # array of filters
@@ -10,7 +12,9 @@ def get_member_from_org(org_name, committee = None, status = None, gender = None
     filters.append(' WHERE org_name = "'+org_name+'"')
     
     # long ass query
+
     query = "SELECT std_num, l_name, f_name, m_name, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member"   
+
     
     if committee is not None:
         filters.append('AND committee_name = "'+committee+'"')
@@ -22,11 +26,13 @@ def get_member_from_org(org_name, committee = None, status = None, gender = None
     # # year number
     # if batch is not None:
     #     filters.append('AND batch = '+batch)
+
     
     if role is not None:
         filters.append('AND role = "'+role+'"')
-        
+
     # M or F pero ? ung rn, actually dapat sex to
+
     if gender is not None:
         filters.append('AND gender = "'+gender+'"')
     
@@ -42,12 +48,13 @@ def get_member_from_org(org_name, committee = None, status = None, gender = None
     cursor.execute(
         query
     )
-  
+
     return cursor.fetchall()
 
 
 # Login member
 def login_member(mem_username, mem_password):
+
     cursor = get_cursor()
     cursor.execute(
         """
@@ -74,6 +81,7 @@ def add_member(std_num, mem_password, degree_program, gender, f_name, l_name, m_
     SELECT *
     FROM member 
     """
+
     )
     print(cursor.fetchall())
     get_conn().commit()
@@ -134,3 +142,4 @@ def get_member_fee(std_num):
     """, (std_num, ))
 
     return cursor.fetchall()
+
