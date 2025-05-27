@@ -10,7 +10,7 @@ def get_member_from_org(org_name, committee = None, status = None, batch = None,
     filters.append(' WHERE org_name = "'+org_name+'"')
     
     # long ass query
-    query = "SELECT std_num, l_name, f_name, m_name, batch, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN (organization_has_member NATURAL JOIN mem_org_batch) "   
+    query = "SELECT std_num, l_name, f_name, m_name, batch, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member "   
     
     if committee is not None:
         filters.append('AND committee_name = "'+committee+'"')
