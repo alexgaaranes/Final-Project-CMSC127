@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
-from app.models import org, member
+from app.models import org, member, fees
 from datetime import date
 
 main_bp = Blueprint('main', __name__)
@@ -126,14 +126,77 @@ def org_home():
     org_deets = session['org']
     return render_template('org/org_dashboard.html', org=org_deets)
 
-@main_bp.route('/org/members', methods=['GET'])
+# Members
+@main_bp.route('/org/members', methods=['GET', 'POST'])
 def org_members():
     if 'org' not in session:
         return redirect(url_for('main.org_login'))
     org_deets = session['org']
     org_name = org_deets['org_name']
-    members = member.get_member_from_org(org_name)
-    return render_template('org/org_members.html', org=org_deets, members=members)
+    coms = org.get_all_org_committees(org_name)
+    
+    std_num = request.form.get('std_search')
+    role = request.form.get('role')
+    sem = request.form.get('sem')
+    status = request.form.get('status') 
+    committee = request.form.get('committee')
+    start = request.form.get('start')
+    end = request.form.get('end')
+    
+    print(committee)
+    
+    if role is None or sem is None or status is None or committee is None or start is None or end is None:
+        filter = ["all", "all", "all", "all", 1900, 2100, None]
+    else:
+        filter = [role, sem, status, committee, start, end, std_num]
+        
+    members = member.get_member_from_org(org_name, role=role, status=status, sem=sem, start=start, end=end, std_num=std_num)
+    return render_template('org/org_members.html', org=org_deets, members=members, filter=filter, coms = coms)
+
+
+# Fees
+@main_bp.route('/org/fees', methods=['GET', 'POST'])
+def org_fees():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']    
+    
+    sem = request.form.get('sem')
+    start = request.form.get('start')
+    end = request.form.get('end')
+
+    if sem is None or start is None or end is None:
+        filter = ["all", 1900, 2100]
+    else:
+        filter = [sem, start, end]
+    
+    fee = fees.get_all_fees(org_name, sem=sem, start=start, end=end)
+    print(fee)
+    return render_template('org/org_fees.html', org=org_deets, fees=fee, filter=filter)
+
+# Org add member post req
+@main_bp.route('/org/delete_member', methods=['POST'])
+def org_delete_mem():
+    # Insert Query
+    org_deets = session['org']
+    org_name = org_deets['org_name']    
+    # Details for organization_has_member tuple
+    std_num = request.form.get('deleted_id')
+
+    print(std_num)
+    member.delete_member(org_name, std_num)    
+
+    return redirect(url_for('main.org_members'))
+
+@main_bp.route('/org/funds', methods=['GET'])
+def org_funds():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    return render_template('org/org_funds.html', org=org_deets)
+
 
 
 # Mem routes
@@ -145,7 +208,6 @@ def mem_home():
 
     return render_template('mem/mem_dashboard.html', member=mem_deets)
 
-
 @main_bp.route('/mem/orgs', methods=['GET'])
 def mem_orgs():
     if 'member' not in session:
@@ -155,13 +217,143 @@ def mem_orgs():
     result = member.get_member_org(std_num)
     return render_template('mem/mem_orgs.html', member=mem_deets, orgs=result)
 
+
 @main_bp.route('/mem/fees', methods=['GET'])
 def mem_fees():
     if 'member' not in session:
         return redirect(url_for('main.mem_login'))
     mem_deets = session['member']
     std_num = mem_deets['std_num']
+
+    orgs = member.get_member_org(std_num)
+
+    orgList = []
+    resultList = []
+
+    for idx, org in enumerate(orgs):
+
+        orgList.append(org['org_name'])
+
+    for idx, org in enumerate(orgList):
+        result = member.get_member_unpaid_fee(std_num, org)
+        resultList.append(result[0])
+
+    return render_template('mem/mem_fees.html', member=mem_deets, fees=resultList, orgs = orgs)
     result = member.get_member_fee(std_num)
     print(result)
     return render_template('mem/mem_fees.html', member=mem_deets, fees=result)
 
+
+
+# Org add member post req
+@main_bp.route('/org/add_member', methods=['POST'])
+def org_add_mem():
+    # Insert Query
+    org_deets = session['org']
+    member_data = request.form
+
+    print(member_data)
+    org_name = org_deets['org_name']
+    std_num = member_data['std-num'] 
+    role = member_data['role']
+    sem = member_data['sem']
+    ay = member_data['ay_start'] + '-' + member_data['ay_end']
+    status = member_data['status']
+    batch = member_data['batch']
+    committee = member_data['committee']
+
+    result = member.add_org_member(std_num, org_name, sem, ay, batch, role, committee, status)    
+    print(result)
+
+    return redirect(url_for('main.org_members'))
+
+# Org add fee post req
+@main_bp.route('/org/add_fee', methods=['POST'])
+def org_add_fee():
+    # Insert Query
+    org_deets = session['org']
+    fee_data = request.form
+
+    org_name = org_deets['org_name']
+    fee_name = fee_data['fee_name']
+    amount = fee_data['fee_amount']
+    due_date = fee_data['fee_due_date']
+    sem = fee_data['fee_semester']
+    ay = fee_data['fee_year_start'] + '-' + fee_data['fee_year_end']
+
+    result = fees.add_org_fee(fee_name, amount, due_date, sem, ay, org_name)
+
+    return redirect(url_for('main.org_funds'))
+
+# Org total unpaid and paid as of date
+@main_bp.route('/org/total_as_of', methods=['GET'])
+def org_total_as_of():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    as_of_date = request.args.get('as_of_date')
+    total_unpaid = fees.get_total_unpaid(org_name, as_of_date)['total_unpaid']
+    total_paid = fees.get_total_paid(org_name, as_of_date)['total_paid']
+
+    return render_template('org/org_funds.html', org=org_deets, total_unpaid=total_unpaid, total_paid=total_paid)
+
+# ORg unpaid members
+@main_bp.route('/org/unpaid_mems', methods=['GET'])
+def org_unpaid_mems():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    sem = request.args.get('unpaid_semester')
+    ay = request.args.get('unpaid_year_start') + '-' + request.args.get('unpaid_year_end')
+
+    unpaid_members = fees.get_unpaid_members(org_name, sem, ay)
+    return render_template('org/org_funds.html', org=org_deets, unpaid_members=unpaid_members)
+
+# org late payments
+@main_bp.route('/org/late_payments', methods=['GET'])
+def org_late_payments():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    sem = request.args.get('late_semester')
+    ay = request.args.get('late_year_start') + '-' + request.args.get('late_year_end')
+    late_payments = fees.get_late_payers(org_name, sem, ay)
+
+    return render_template('org/org_funds.html', org=org_deets, late_payments=late_payments)
+
+# org mem with highest debt
+@main_bp.route('/org/highest_debt_mems', methods=['GET'])
+def org_highest_debt_mems():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    sem = request.args.get('debt_semester')
+    ay = request.args.get('debt_year_start') + '-' + request.args.get('debt_year_end')
+    highest_debt_mems = fees.get_highest_debt_members(org_name, sem, ay)
+
+    return render_template('org/org_funds.html', org=org_deets, debt_members=highest_debt_mems)
+
+# Edit member in org
+@main_bp.route('/org/edit_member', methods=['POST'])
+def org_edit_member():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    member_id = request.form.get('member_id')
+    role = request.form.get('edit_role')
+    status = request.form.get('edit_status')
+    committee = request.form.get('committee')
+    sem = request.form.get('edit_sem')
+    year_start = request.form.get('edit_ay_start')
+    year_end = request.form.get('edit_ay_end')
+    ay = f"{year_start}-{year_end}" # format 
+
+    print(member_id, org_name, sem, ay, role, committee, status)
+
+    member.edit_org_member(member_id, org_name, sem, ay, role, committee, status)
+    return redirect(url_for('main.org_members'))

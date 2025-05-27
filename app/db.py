@@ -28,7 +28,6 @@ def initialize_db(config):
     _cursor.execute("""
     CREATE TABLE IF NOT EXISTS member(
         std_num CHAR(10),
-        mem_username VARCHAR(20) UNIQUE NOT NULL,
         mem_password VARCHAR(30),
         degree_program VARCHAR(50) NOT NULL,
         gender VARCHAR(10),
@@ -100,6 +99,34 @@ def initialize_db(config):
         CONSTRAINT fee_id_ck CHECK(fee_id > 0)
     )
     """)
+
+    # Triggers
+
+    # create trigger where every insert in fee creates a new row in member_pays_fee for each member on the same semester and acad year
+    _cursor.execute(
+        """
+        CREATE TRIGGER IF NOT EXISTS create_member_fee
+        AFTER INSERT ON fee
+        FOR EACH ROW
+        INSERT INTO member_pays_fee (std_num, fee_id)
+            SELECT m.std_num, NEW.fee_id
+            FROM organization_has_member m
+            WHERE m.mem_sem = NEW.fee_sem AND m.mem_acad_year = NEW.fee_acad_year AND m.org_name = NEW.org_name;
+        """
+    )
+
+    # create trigger where an insert of a member on a certain sem and ay in organazation will have an imposed fee if there is existing fee on the same sem and ay
+    _cursor.execute(
+        """
+        CREATE TRIGGER IF NOT EXISTS create_member_fee_on_insert
+        AFTER INSERT ON organization_has_member
+        FOR EACH ROW
+        INSERT INTO member_pays_fee (std_num, fee_id)
+            SELECT NEW.std_num, f.fee_id
+            FROM fee f
+            WHERE f.fee_sem = NEW.mem_sem AND f.fee_acad_year = NEW.mem_acad_year AND f.org_name = NEW.org_name;
+        """
+    ) 
 
     _conn.commit()
 
