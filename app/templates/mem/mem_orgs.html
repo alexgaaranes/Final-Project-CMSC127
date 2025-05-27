@@ -21,6 +21,7 @@
                 <a href="/mem/fees" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center {% if active_page == 'fees' %}bg-green-200 font-bold{% endif %}">My Fees</a>
             </nav>
         </aside>
+        
         <main class="flex-grow flex flex-col items-center justify-center p-8">
             <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-5xl">
                 <h2 class="text-xl font-semibold mb-6 text-gray-800">My Organizations</h2>
@@ -44,13 +45,13 @@
                         <tbody>
                             {% for org in orgs %}
                             <tr class="hover:bg-red-50 text-sm">
-                                <td class="py-2 px-4 border-b text-sm">{{ org.std_num }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.org_name }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.mem_sem }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.mem_acad_year }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.role }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.committee_name }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ org.status }}</td>
+                                <td class="py-2 px-9 border-b text-sm">{{ org.std_num }}</td>
+                                <td class="py-2 px-14 border-b text-sm">{{ org.org_name }}</td>
+                                <td class="py-2 px-14 border-b text-sm">{{ org.mem_sem }}</td>
+                                <td class="py-2 px-9 border-b text-sm">{{ org.mem_acad_year }}</td>
+                                <td class="py-2 px-10 border-b text-sm">{{ org.role }}</td>
+                                <td class="py-2 px-9 border-b text-sm">{{ org.committee_name }}</td>
+                                <td class="py-2 px-9 border-b text-sm">{{ org.status }}</td>
                             </tr>
                             {% else %}
                             <tr>

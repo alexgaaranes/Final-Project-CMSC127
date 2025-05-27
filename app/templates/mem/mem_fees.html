@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Organizations - OrgSys</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        function toggleCollapse(id){
+            const content = document.getElementById(`content-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                content.classList.add('hidden');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        }
+    </script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col items-center">
     <header class="w-full bg-[#6e101d] shadow-md p-4 flex justify-between items-center">
@@ -21,50 +38,79 @@
                 <a href="/mem/fees" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center {% if active_page == 'fees' %}bg-green-200 font-bold{% endif %}">My Fees</a>
             </nav>
         </aside>
+
         <main class="flex-grow flex flex-col items-center justify-center p-8">
             <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-5xl">
                 <h2 class="text-xl font-semibold mb-6 text-gray-800">My Fees</h2>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-black rounded shadow">
-                        <caption class="caption-bottom text-gray-700 font-semibold mb-3">
-                            <span class="text-xs text-gray-500 p-3">Showing {{ fees|length }} Fees</span>
-                        </caption>
-                        <thead>
-                            <tr class="bg-green-200 text-sm">
-                                <th class="py-2 px-4 border-b text-sm">Student Number</th>
-                                <th class="py-2 px-4 border-b text-sm">Fee id</th>
-                                <th class="py-2 px-4 border-b text-sm">Fee name</th>
-                                <th class="py-2 px-4 border-b text-sm">Amount</th>
-                                <th class="py-2 px-4 border-b text-sm">Due date</th>
-                                <th class="py-2 px-4 border-b text-sm">Date paid</th>
-                                <th class="py-2 px-4 border-b text-sm">Semester</th>
-                                <th class="py-2 px-4 border-b text-sm">Academic Year</th>
-                                <th class="py-2 px-4 border-b text-sm">Organization name</th>
-                                <th class="py-2 px-4 border-b text-sm">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for fee in fees %}
-                            <tr class="hover:bg-red-50 text-sm">
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.std_num }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_id }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_name }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.amount }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.due_date }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.paid_date }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_sem }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.fee_acad_year }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.org_name }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ fee.status }}</td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="10" class="py-4 px-4 text-center text-gray-500 text-sm">No Fees found.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                
+                
+                    <div class="space-y-4">
+                        {% for org in orgs %}
+                        <div class="border border-gray-200 rounded" rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-green-100 p-4 flex justify-between items-center cursor-pointer hover:bg-green-200 transition-colors border rounded" onclick="toggleCollapse('{{ loop.index }}')">
+                                <div class="flex-1">
+                                    <h3 class="font-semibold text-lg">{{ org.org_name }}</h3>
+                                    <p class="text-sm text-gray-600"> {{org.role}} • {{ org.committee_name }} • {{ org.status }}</p>
+                                </div>
+
+                                <div class="ml-4">
+                                    <i id="icon-{{loop.index}}" class="fas fa-chevron-down transition-transform"></i>
+                                </div>
+
+                            </div>
+
+                            <div id="content-{{loop.index}}" class="hidden bg-white p-4 border-t border-gray-200">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 class="font-bold text-gray-800 mb-2">Organization Details</h4>
+                                        <div class="space-y-2 text-md">
+                                            <p><span class="font-medium">Joined:</span>  Semester {{ org.mem_sem }}, {{ org.mem_acad_year }}</p>
+                                            <p><span class="font-medium">Student Number:</span> {{ org.std_num }}</p>
+                                            <p><span class="font-medium">Status:</span> {{ org.status }}</p>
+                                        </div>
+                                    </div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-800 mb-2">Unpaid Fees</h4>
+                                            <table class="min-w-full bg-white border border-black rounded shadow">
+                                                <thead>
+                                                    <tr class="bg-green-200 text-sm">
+                                                        <th class="py-2 px-4 border-b text-sm">Fee id</th>
+                                                        <th class="py-2 px-4 border-b text-sm">Fee name</th>
+                                                        <th class="py-2 px-4 border-b text-sm">Amount</th>
+                                                        <th class="py-2 px-4 border-b text-sm">Due date</th>
+                                                        <th class="py-2 px-4 border-b text-sm">Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {%for fee in fees%}
+                                                        {% if org.org_name == fee.org_name: %}
+                                                            <tr class="hover:bg-red-50 text-sm">
+                                                                <td class="py-2 px-4 border-b text-sm">{{fee.fee_id}}</td>
+                                                                <td class="py-2 px-4 border-b text-sm">{{fee.fee_name}}</td>
+                                                                <td class="py-2 px-4 border-b text-sm">{{fee.amount}}</td>
+                                                                <td class="py-2 px-4 border-b text-sm">{{fee.due_date}}</td>
+                                                                <td class="py-2 px-4 border-b text-sm">{{fee.status}}</td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% else %}
+                                                            <tr>
+                                                                <td colspan="10" class="py-4 px-4 text-center text-gray-500 text-sm"> No Unpaid Fees found.</td>
+                                                            </tr>
+                                                        
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        <br/>
+                        </div>
+                        {% else %}
+                        <p> No organizations joined.</p>
+                        {% endfor %}
+                    </div>
         </main>
     </div>
 
