@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
 from app.models import org, member, fees
+from datetime import date
 
 main_bp = Blueprint('main', __name__)
 
@@ -125,14 +126,68 @@ def org_home():
     org_deets = session['org']
     return render_template('org/org_dashboard.html', org=org_deets)
 
-@main_bp.route('/org/members', methods=['GET'])
+# Members
+@main_bp.route('/org/members', methods=['GET', 'POST'])
 def org_members():
     if 'org' not in session:
         return redirect(url_for('main.org_login'))
     org_deets = session['org']
     org_name = org_deets['org_name']
-    members = member.get_member_from_org(org_name)
-    return render_template('org/org_members.html', org=org_deets, members=members)
+    coms = org.get_all_org_committees(org_name)
+    
+    std_num = request.form.get('std_search')
+    role = request.form.get('role')
+    sem = request.form.get('sem')
+    status = request.form.get('status') 
+    committee = request.form.get('committee')
+    start = request.form.get('start')
+    end = request.form.get('end')
+    
+    print(committee)
+    
+    if role is None or sem is None or status is None or committee is None or start is None or end is None:
+        filter = ["all", "all", "all", "all", 1900, 2100, None]
+    else:
+        filter = [role, sem, status, committee, start, end, std_num]
+        
+    members = member.get_member_from_org(org_name, role=role, status=status, sem=sem, start=start, end=end, std_num=std_num)
+    return render_template('org/org_members.html', org=org_deets, members=members, filter=filter, coms = coms)
+
+
+# Fees
+@main_bp.route('/org/fees', methods=['GET', 'POST'])
+def org_fees():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']    
+    
+    sem = request.form.get('sem')
+    start = request.form.get('start')
+    end = request.form.get('end')
+
+    if sem is None or start is None or end is None:
+        filter = ["all", 1900, 2100]
+    else:
+        filter = [sem, start, end]
+    
+    fee = fees.get_all_fees(org_name, sem=sem, start=start, end=end)
+    print(fee)
+    return render_template('org/org_fees.html', org=org_deets, fees=fee, filter=filter)
+
+# Org add member post req
+@main_bp.route('/org/delete_member', methods=['POST'])
+def org_delete_mem():
+    # Insert Query
+    org_deets = session['org']
+    org_name = org_deets['org_name']    
+    # Details for organization_has_member tuple
+    std_num = request.form.get('deleted_id')
+
+    print(std_num)
+    member.delete_member(org_name, std_num)    
+
+    return redirect(url_for('main.org_members'))
 
 @main_bp.route('/org/funds', methods=['GET'])
 def org_funds():
@@ -153,7 +208,6 @@ def mem_home():
 
     return render_template('mem/mem_dashboard.html', member=mem_deets)
 
-
 @main_bp.route('/mem/orgs', methods=['GET'])
 def mem_orgs():
     if 'member' not in session:
@@ -172,6 +226,8 @@ def mem_fees():
     result = member.get_member_fee(std_num)
     print(result)
     return render_template('mem/mem_fees.html', member=mem_deets, fees=result)
+
+
 
 # Org add member post req
 @main_bp.route('/org/add_member', methods=['POST'])

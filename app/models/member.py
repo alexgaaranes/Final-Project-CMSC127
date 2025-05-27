@@ -1,7 +1,7 @@
 from app.db import get_cursor, get_conn
 
 
-def get_member_from_org(org_name, committee = None, status = None, batch = None, gender = None, role = None, start = None, end = None):
+def get_member_from_org(org_name, sem = "all", committee = "all", status = "all", batch = "all", std_num = None, role = "all", start = None, end = None):
 
     cursor = get_cursor()
     
@@ -14,29 +14,32 @@ def get_member_from_org(org_name, committee = None, status = None, batch = None,
 
     query = "SELECT std_num, l_name, f_name, m_name, batch, mem_sem, mem_acad_year, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member "   
     
-    if committee is not None:
+    
+    if sem != "all" and sem is not None:
+        filters.append('AND mem_sem = "'+sem+'"')
+    
+    if committee != "all" and committee is not None:
         filters.append('AND committee_name = "'+committee+'"')
     
     # active, inactive, alumni
-    if status is not None:
+    if status != "all" and status is not None:
         filters.append('AND status = "'+status+'"')
 
     # year number
-    if batch is not None:
+    if batch != "all" and batch is not None:
         filters.append('AND batch = '+batch)
 
     
-    if role is not None:
+    if role != "all" and role is not None:
         filters.append('AND role = "'+role+'"')
 
-    # M or F pero ? ung rn, actually dapat sex to
 
-    if gender is not None:
-        filters.append('AND gender = "'+gender+'"')
+    if std_num is not None and len(std_num) == 10:
+        filters.append('AND std_num = "'+std_num+'"')
     
     # should place YEAR  
     if start is not None and end is not None:
-        filters.append('AND (CAST(substring(mem_acad_year, 1, 4) AS int)) BETWEEN'+start+' AND '+end)
+        filters.append('AND (CAST(substring(mem_acad_year, 1, 4) AS int)) BETWEEN '+start+' AND '+end)
     
     # joining of all filters togther
     query += "".join(filters) 
@@ -63,6 +66,21 @@ def login_member(mem_username, mem_password):
         """, (mem_username, mem_password)
     )
     return cursor.fetchone()
+
+
+# Login member
+def delete_member(org_name, std_num):
+
+    cursor = get_cursor()
+    cursor.execute(
+        """
+        DELETE 
+        FROM organization_has_member
+        WHERE std_num = %s AND
+        org_name = %s;
+        """, (std_num, org_name)
+    )
+    get_conn().commit()
 
 
 # register a new student member
