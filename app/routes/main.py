@@ -217,12 +217,28 @@ def mem_orgs():
     result = member.get_member_org(std_num)
     return render_template('mem/mem_orgs.html', member=mem_deets, orgs=result)
 
+
 @main_bp.route('/mem/fees', methods=['GET'])
 def mem_fees():
     if 'member' not in session:
         return redirect(url_for('main.mem_login'))
     mem_deets = session['member']
     std_num = mem_deets['std_num']
+
+    orgs = member.get_member_org(std_num)
+
+    orgList = []
+    resultList = []
+
+    for idx, org in enumerate(orgs):
+
+        orgList.append(org['org_name'])
+
+    for idx, org in enumerate(orgList):
+        result = member.get_member_unpaid_fee(std_num, org)
+        resultList.append(result[0])
+
+    return render_template('mem/mem_fees.html', member=mem_deets, fees=resultList, orgs = orgs)
     result = member.get_member_fee(std_num)
     print(result)
     return render_template('mem/mem_fees.html', member=mem_deets, fees=result)

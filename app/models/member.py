@@ -145,8 +145,7 @@ def get_member_org(std_num):
 
     return cursor.fetchall()
 
-
-#view member's fees
+# view all of member's fees
 def get_member_fee(std_num):
     cursor = get_cursor()
     
@@ -157,6 +156,21 @@ def get_member_fee(std_num):
         WHERE std_num = %s;
                    
     """, (std_num, ))
+
+    return cursor.fetchall()
+
+
+#view member's unpaid fees by org
+def get_member_unpaid_fee(std_num, org_name):
+    cursor = get_cursor()
+    
+    cursor.execute("""
+
+        SELECT std_num, m.fee_id, fee_name, amount, due_date, paid_date, fee_sem, fee_acad_year, org_name, status
+        FROM member_pays_fee m join fee f ON m.fee_id = f.fee_id
+        WHERE std_num = %s AND status = 'NP' AND org_name = %s ;
+                   
+    """, (std_num, org_name))
 
     return cursor.fetchall()
 
