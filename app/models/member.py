@@ -1,7 +1,7 @@
 from app.db import get_cursor, get_conn
 
 
-def get_member_from_org(org_name, committee = None, status = None, gender = None, role = None, start = None, end = None):
+def get_member_from_org(org_name, committee = None, status = None, batch = None, gender = None, role = None, start = None, end = None):
 
     cursor = get_cursor()
     
