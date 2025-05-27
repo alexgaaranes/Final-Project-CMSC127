@@ -121,3 +121,13 @@ def mem_orgs():
     std_num = mem_deets['std_num']
     result = member.get_member_org(std_num)
     return render_template('mem/mem_orgs.html', member=mem_deets, orgs=result)
+
+@main_bp.route('/mem/fees', methods=['GET'])
+def mem_fees():
+    if 'member' not in session:
+        return redirect(url_for('main.mem_login'))
+    mem_deets = session['member']
+    std_num = mem_deets['std_num']
+    result = member.get_member_fee(std_num)
+    print(result)
+    return render_template('mem/mem_fees.html', member=mem_deets, fees=result)
