@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Dashboard - OrgSys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center">
+    <header class="w-full bg-[#6e101d] shadow-md p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-left pl-10 text-white">{{ org.org_name }}</h1>
+        <a href="/logout"><h3 class="text-2x; font-bold text-right pr-10 text-red-400">Logout</h3></a>
+    </header>
+
+    <div class="flex flex-1 w-full">
+        <!-- Side Drawer -->
+        <aside class="w-64 bg-white shadow-lg p-4 flex flex-col">
+            <nav class="flex flex-col gap-4 h-full">
+                <a href="/org/home" class="py-4 px-4 rounded bg-green-200 hover:bg-green-100 transition-colors font-medium w-full text-center {% if active_page == 'home' %}bg-green-200 font-bold{% endif %}">Homepage</a>
+                <a href="/org/members" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center {% if active_page == 'members' %}bg-green-200 font-bold{% endif %}">Members</a>
+                <a href="/org/funds" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center {% if active_page == 'funds' %}bg-green-200 font-bold{% endif %}">Funds</a>
+            </nav>
+        </aside>
+        <main class="flex-grow flex items-center justify-center">
+            <!-- Default Homepage Content -->
+            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Welcome, {{ org.org_name }}!</h2>
+                <ul class="mb-4 text-gray-700">
+                    <li><span class='font-semibold'>Account:</span> {{ org.org_account }}</li>
+                    <li><span class="font-semibold">Date Formed:</span> {{ org.date_formed[:16] }}</li> <!-- AHAHAH di ko alam pano to iformat ni slice ko nalang-->
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <footer class="w-full bg-white shadow-md p-4 mt-auto">
+        <p class="text-center text-gray-600">&copy; 2025 Tupperware. All rights reserved.</p>
+    </footer>
+</body>
+</html>

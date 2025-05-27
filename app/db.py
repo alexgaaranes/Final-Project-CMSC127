@@ -16,9 +16,9 @@ def initialize_db(config):
     # Table Creation
     _cursor.execute("""
     CREATE TABLE IF NOT EXISTS organization(
-        org_name VARCHAR(50),
-        org_account VARCHAR(20),
-        org_password VARCHAR(30), 
+        org_name VARCHAR(50) UNIQUE NOT NULL,
+        org_account VARCHAR(20) UNIQUE NOT NULL,
+        org_password VARCHAR(30) NOT NULL, 
         date_formed DATE NOT NULL,
         org_funds INT(10) DEFAULT 0,
         PRIMARY KEY(org_name)
@@ -28,7 +28,7 @@ def initialize_db(config):
     _cursor.execute("""
     CREATE TABLE IF NOT EXISTS member(
         std_num CHAR(10),
-        mem_username VARCHAR(20),
+        mem_username VARCHAR(20) UNIQUE NOT NULL,
         mem_password VARCHAR(30),
         degree_program VARCHAR(50) NOT NULL,
         gender VARCHAR(10),
