@@ -1,9 +1,0 @@
-/Include
-/Lib
-/Scripts
-pyvenv.cfg
-
-.vscode/
-__pycache__/
-*.py[cod]
-*$py.class
