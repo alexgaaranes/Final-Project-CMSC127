@@ -108,23 +108,32 @@
                     <h3 class="text-lg font-semibold mb-4">Editing: <span id="std_num"></span></h3>
                     <form id="editForm" action="/org/edit_member" method="post">
                         <input type="hidden" name="member_id" id="member_id">
+                        <input type="hidden" name="edit_sem" id="edit_sem">
+                        <input type="hidden" name="edit_ay_start" id="edit_ay_start">
+                        <input type="hidden" name="edit_ay_end" id="edit_ay_end">
+                        <!-- Role -->
                         <div class="mb-4">
-                            <label for="role" class="block text-gray-700 mb-2">Role</label>
-                            <input type="text" id="role" name="role" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <label for="edit_role" class="block mb-2">Role</label>
+                            <select name="edit_role" id="edit_role" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                                <option value="resident-member">Resident Member</option>
+                                <option value="executive">Executive</option>
+                            </select>
                         </div>
+                        <!-- Status -->
                         <div class="mb-4">
-                            <label for="status" class="block text-gray-700 mb-2">Status</label>
-                            <input type="text" id="status" name="status" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <label for="edit_status" class="block mb-2">Status</label>
+                            <select name="edit_status" id="edit_status" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="alumni">Alumni</option>
+                            </select>
                         </div>
+                        <!-- Committee -->
                         <div class="mb-4">
-                            <label for="commitee" class="block text-gray-700 mb-2">Commitee</label>
-                            <input type="text" id="commitee" name="commitee" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <label for="edit_committee" class="block mb-2">Committee</label>
+                            <input type="text" id="edit_committee" name="committee" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
                         </div>
-                        <!--Save for new semester and AY or Save for current semester-->
-                        <div class="mb-4">
-                            <button type="submit" class="w-full bg-green-700 text-white py-2 rounded mb-4">Default Save</button>
-                            <button type="submit" class="w-full bg-gray-300 text-green-900 py-2 rounded">Save as New</button>
-                        </div>
+                        <button type="submit" class="w-full bg-green-700 text-white py-2 rounded mb-4">Update</button>
                     </form>
                     <button onclick="closeEditModal()" class="mt-4 w-full bg-red-700 text-white py-2 rounded">Cancel</button>
                 </div>
@@ -134,42 +143,52 @@
             <div id="addModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
                 <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                     <h3 class="text-lg font-semibold mb-4">Adding a Member</h3>
-                    <form id="editForm" action="/org/add_member" method="post">
+                    <form id="addForm" action="/org/add_member" method="post">
                         <input type="hidden" name="member_id" id="member_id">
                         <div class="mb-4">
-                            <label for="std-num" class="block text-gray-700 mb-2">Student Number</label>
+                            <label for="std-num" class="block mb-2">Student Number</label>
                             <input type="text" id="std-num" name="std-num" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
                         </div>
-                        <!-- Role -->
-                        <select name='role' class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]" id="role">
-                            <option value="resident-member">Resident Member</option>
-                            <option value="executive">Executive</option>
-                        </select>
-                        <!--Sem and Acad Year -->
-                        <select name='sem' class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]" id="sem">
-                            <option value="1">1st Semester</option>
-                            <option value="2">2nd Semester</option>
-                        </select>
-                        <select name='ay' class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]" id="ay">
-                            <!-- TODO: From founding date to present -->
-                            <option value="2023-2024">2023-2024</option>
-                            <option value="2024-2025">2024-2025</option>
-                            <option value="2025-2026">2025-2026</option>
-                        </select>
-                        <!-- Status -->
-                        <select name='status' class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]" id="status">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                            <option value="alumni">Alumni</option>
-                        </select>
-                        <select name='batch' class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]" id="batch">
-                            <!-- TODO: From founding date to present -->
-                            <option value="2023">2023</option>
-                            <option value="2024">2024</option>
-                            <option value="2025">2025</option>
-                        </select>
                         <div class="mb-4">
-                            <label for="committee" class="block text-gray-700 mb-2">Committee</label>
+                            <label for="role" class="block mb-2">Role</label>
+                            <select name='role' id="role" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                                <option value="resident-member">Resident Member</option>
+                                <option value="executive">Executive</option>
+                            </select>
+                        </div>
+                        <div class="mb-4 flex gap-4">
+                            <div>
+                                <label for="sem" class="block mb-2">Semester</label>
+                                <select name='sem' id="sem" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                                    <option value="1">1st Semester</option>
+                                    <option value="2">2nd Semester</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-1" for="ay_start">Academic Year</label>
+                                <div class="flex gap-2">
+                                    <input type="number" name="ay_start" id="ay_start" min="1500" max="2100" placeholder="Start" class="border rounded px-2 py-1 w-20" required>
+                                    <span class="self-center">-</span>
+                                    <input type="number" name="ay_end" id="ay_end" min="1500" max="2100" placeholder="End" class="border rounded px-2 py-1 w-20" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4 flex gap-4">
+                            <div>
+                                <label for="status" class="block mb-2">Status</label>
+                                <select name='status' id="status" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="alumni">Alumni</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="batch" class="block mb-2">Batch</label>
+                                <input type="number" name="batch" id="batch" min="1500" max="2100" placeholder="Batch Year" class="border rounded px-2 py-1 w-32" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="committee" class="block mb-2">Committee</label>
                             <input type="text" id="committee" name="committee" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
                         </div>
                         <div class="mb-4">
@@ -190,9 +209,17 @@
     // Edit modal funcs
     function openEditModal(member) {
         document.getElementById('std_num').innerText = member.std_num;
-        document.getElementById('role').value = member.role;
-        document.getElementById('status').value = member.status;
-        document.getElementById('commitee').value = member.committee_name;
+        document.getElementById('member_id').value = member.std_num;
+        document.getElementById('edit_role').value = member.role;
+        document.getElementById('edit_status').value = member.status;
+        document.getElementById('edit_committee').value = member.committee_name;
+        document.getElementById('edit_sem').value = member.mem_sem;
+        console.log(member)
+        if (member.mem_acad_year) {
+            const [startYear, endYear] = member.mem_acad_year.split('-');
+            document.getElementById('edit_ay_start').value = startYear;
+            document.getElementById('edit_ay_end').value = endYear;
+        }
         document.getElementById('editModal').classList.remove('hidden');
     }
 

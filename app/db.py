@@ -122,7 +122,7 @@ def initialize_db(config):
         AFTER INSERT ON organization_has_member
         FOR EACH ROW
         INSERT INTO member_pays_fee (std_num, fee_id)
-            SELECT m.std_num, f.fee_id
+            SELECT NEW.std_num, f.fee_id
             FROM fee f
             WHERE f.fee_sem = NEW.mem_sem AND f.fee_acad_year = NEW.mem_acad_year AND f.org_name = NEW.org_name;
         """

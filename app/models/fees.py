@@ -78,7 +78,6 @@ def get_unpaid_members(org_name, sem, acad_year):
             AND f.fee_sem = %s
             AND f.fee_acad_year = %s
             AND m.status = 'NP';
-        ORDER BY name ASC;
         """,
         (org_name, sem, acad_year)
     )
@@ -100,7 +99,6 @@ def get_late_payers(org_name, sem, acad_year):
             AND f.fee_acad_year = %s
             AND m.status = 'P'
             AND m.paid_date > f.due_date;
-        ORDER BY m.paid_date DESC;
         """,
         (org_name, sem, acad_year)
     )
@@ -122,7 +120,6 @@ def get_highest_debt_members(org_name, sem, acad_year):
             AND f.fee_acad_year = %s
             AND m.status = 'NP'
         GROUP BY m.std_num
-        ORDER BY total_debt DESC
         """,
         (org_name, sem, acad_year)
     )

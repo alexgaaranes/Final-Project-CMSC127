@@ -12,7 +12,7 @@ def get_member_from_org(org_name, committee = None, status = None, batch = None,
     filters.append(' WHERE org_name = "'+org_name+'"')
     
 
-    query = "SELECT std_num, l_name, f_name, m_name, batch, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member "   
+    query = "SELECT std_num, l_name, f_name, m_name, batch, mem_sem, mem_acad_year, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member "   
     
     if committee is not None:
         filters.append('AND committee_name = "'+committee+'"')
@@ -142,3 +142,20 @@ def get_member_fee(std_num):
 
     return cursor.fetchall()
 
+# edit member
+def edit_org_member(std_num, org_name, mem_sem, mem_acad_year, role, committee_name, status):
+    cursor = get_cursor()
+    cursor.execute(
+        """
+        UPDATE organization_has_member
+        SET role = %s,
+            committee_name = %s,
+            status = %s
+        WHERE std_num = %s
+          AND org_name = %s
+          AND mem_sem = %s
+          AND mem_acad_year = %s
+        """,
+        (role, committee_name, status, std_num, org_name, mem_sem, mem_acad_year)
+    )
+    get_conn().commit()

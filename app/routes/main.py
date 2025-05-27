@@ -181,12 +181,11 @@ def org_add_mem():
     member_data = request.form
 
     print(member_data)
-    # Details for organization_has_member tuple
     org_name = org_deets['org_name']
     std_num = member_data['std-num'] 
     role = member_data['role']
     sem = member_data['sem']
-    ay = member_data['ay']
+    ay = member_data['ay_start'] + '-' + member_data['ay_end']
     status = member_data['status']
     batch = member_data['batch']
     committee = member_data['committee']
@@ -203,8 +202,6 @@ def org_add_fee():
     org_deets = session['org']
     fee_data = request.form
 
-    print(fee_data)
-    # Details for fee tuple
     org_name = org_deets['org_name']
     fee_name = fee_data['fee_name']
     amount = fee_data['fee_amount']
@@ -267,3 +264,24 @@ def org_highest_debt_mems():
     highest_debt_mems = fees.get_highest_debt_members(org_name, sem, ay)
 
     return render_template('org/org_funds.html', org=org_deets, debt_members=highest_debt_mems)
+
+# Edit member in org
+@main_bp.route('/org/edit_member', methods=['POST'])
+def org_edit_member():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    member_id = request.form.get('member_id')
+    role = request.form.get('edit_role')
+    status = request.form.get('edit_status')
+    committee = request.form.get('committee')
+    sem = request.form.get('edit_sem')
+    year_start = request.form.get('edit_ay_start')
+    year_end = request.form.get('edit_ay_end')
+    ay = f"{year_start}-{year_end}" # format 
+
+    print(member_id, org_name, sem, ay, role, committee, status)
+
+    member.edit_org_member(member_id, org_name, sem, ay, role, committee, status)
+    return redirect(url_for('main.org_members'))
