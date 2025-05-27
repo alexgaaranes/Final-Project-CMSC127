@@ -26,7 +26,7 @@ def get_member_from_org(org_name, committee = None, status = None, gender = None
     if role is not None:
         filters.append('AND role = "'+role+'"')
         
-    # M or F pero ? ung rn
+    # M or F pero ? ung rn, actually dapat sex to
     if gender is not None:
         filters.append('AND gender = "'+gender+'"')
     
@@ -53,7 +53,7 @@ def login_member(mem_username, mem_password):
         """
         SELECT *
         FROM member
-        WHERE mem_username = %s
+        WHERE std_num = %s
         AND mem_password = %s;
         """, (mem_username, mem_password)
     )
@@ -61,13 +61,13 @@ def login_member(mem_username, mem_password):
 
 
 # register a new student member
-def register_org(std_num, mem_username, mem_password, degree_program, gender, f_name, l_name, m_name):
+def add_member(std_num, mem_password, degree_program, gender, f_name, l_name, m_name):
     cursor = get_cursor()
     cursor.execute(
         """
-        INSERT INTO member(mem_username, mem_password, degree_program, gender, f_name, l_name, m_name)
-        VALUES (%s, %s, %s, %s);
-        """, (std_num, mem_username, mem_password, degree_program, gender, f_name, l_name, m_name,)
+        INSERT INTO member(std_num, mem_password, degree_program, gender, f_name, l_name, m_name)
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
+        """, (std_num, mem_password, degree_program, gender, f_name, l_name, m_name,)
     )
     cursor.execute(
     """
