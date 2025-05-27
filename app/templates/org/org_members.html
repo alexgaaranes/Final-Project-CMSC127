@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Members - OrgSys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center">
+    <header class="w-full bg-[#6e101d] shadow-md p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-left pl-10 text-white">{{ org.org_name }}</h1>
+        <a href="/logout"><h3 class="text-2x; font-bold text-right pr-10 text-red-400">Logout</h3></a>
+    </header>
+
+    <div class="flex flex-1 w-full">
+        <!-- Side Drawer -->
+        <aside class="w-64 bg-white shadow-lg p-4 flex flex-col">
+            <nav class="flex flex-col gap-4 h-full">
+                <a href="/org/home" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Homepage</a>
+                <a href="/org/members" class="py-4 px-4 bg-green-200 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Members</a>
+                <a href="/org/funds" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Funds</a>
+            </nav>
+        </aside>
+        <main class="flex-grow flex flex-col items-center justify-center p-8">
+            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-5xl">
+                <h2 class="text-xl font-semibold mb-6 text-gray-800">View Members</h2>
+                <!-- Filters -->
+                <div class="mb-6 flex justify-between items-center">
+                    <!--Role-->
+                    <div class="flex gap-4">
+                        <input type="text" placeholder="Search by name" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d] w-64">
+                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="resident-member">Resident Member</option>
+                            <option value="executive">Executive</option>
+                        </select>
+                    </div>
+                    <!--Status-->
+                    <div class="flex gap-4">
+                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="all">All</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <!--Sem and Acad Year -->
+                    <div class="flex gap-4">
+                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="1st-sem">1st Semester</option>
+                            <option value="2nd-sem">2nd Semester</option>
+                        </select>
+                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <!-- From founding date to present -->
+                            <option value="2023-2024">2023-2024</option>
+                            <option value="2024-2025">2024-2025</option>
+                            <option value="2025-2026">2025-2026</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <!-- Create a table base on the sent data from the route (TODO: add filtering)-->
+                    <table class="min-w-full bg-white border border-black rounded shadow">
+                        <caption class="caption-bottom text-gray-700 font-semibold mb-3">
+                            <span class="text-xs text-gray-500 p-3">Showing {{ members|length }} members</span>
+                        </caption>
+                        <thead>
+                            <tr class="bg-green-200 text-sm">
+                                <th class="py-2 px-4 border-b text-sm">Student Number</th>
+                                <th class="py-2 px-4 border-b text-sm">First Name</th>
+                                <th class="py-2 px-4 border-b text-sm">Middle Name</th>
+                                <th class="py-2 px-4 border-b text-sm">Last Name</th>
+                                <th class="py-2 px-4 border-b text-sm">Degree Program</th>
+                                <th class="py-2 px-4 border-b text-sm">Gender</th>
+                                <th class="py-2 px-4 border-b text-sm">Role</th>
+                                <th class="py-2 px-4 border-b text-sm">Status</th>
+                                <th class="py-2 px-4 border-b text-sm">Committee</th>
+                                <th class="py-2 px-4 border-b text-sm">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in members %}
+                            <tr class="hover:bg-red-50 text-sm">
+                                <td class="py-2 px-4 border-b text-sm">{{ member.std_num }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ member.f_name }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ member.m_name }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ member.l_name }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ member.degree_program }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ member.gender }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ member.role }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ member.status }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ member.committee_name }}</td>
+                                <td class="py-2 px-4 border-b text-sm">
+                                    <button class="text-blue-500 hover:text-blue-700 edit-button" data-member='{{ member|tojson }}'>Edit</button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="10" class="py-4 px-4 text-center text-gray-500 text-sm">No members found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Hidden Modal-->
+            <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+                <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h3 class="text-lg font-semibold mb-4">Editing: <span id="std_num"></span></h3>
+                    <form id="editForm" action="/org/edit_member" method="post">
+                        <input type="hidden" name="member_id" id="member_id">
+                        <div class="mb-4">
+                            <label for="role" class="block text-gray-700 mb-2">Role</label>
+                            <input type="text" id="role" name="role" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                        </div>
+                        <div class="mb-4">
+                            <label for="status" class="block text-gray-700 mb-2">Status</label>
+                            <input type="text" id="status" name="status" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                        </div>
+                        <div class="mb-4">
+                            <label for="commitee" class="block text-gray-700 mb-2">Commitee</label>
+                            <input type="text" id="commitee" name="commitee" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                        </div>
+                        <!--Save for new semester and AY or Save for current semester-->
+                        <div class="mb-4">
+                            <button type="submit" class="w-full bg-green-700 text-white py-2 rounded mb-4">Default Save</button>
+                            <button type="submit" class="w-full bg-gray-300 text-green-900 py-2 rounded">Save as New</button>
+                        </div>
+                    </form>
+                    <button onclick="closeModal()" class="mt-4 w-full bg-red-700 text-white py-2 rounded">Cancel</button>
+            </div>
+        </main>
+    </div>
+
+    <footer class="w-full bg-white shadow-md p-4 mt-auto">
+        <p class="text-center text-gray-600">&copy; 2025 Tupperware. All rights reserved.</p>
+    </footer>
+</body>
+<script>
+    function openModal(member) {
+        document.getElementById('std_num').innerText = member.std_num;
+        document.getElementById('role').value = member.role;
+        document.getElementById('status').value = member.status;
+        document.getElementById('commitee').value = member.committee_name;
+        document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').classList.add('hidden');
+    }
+
+    // put click event and pass the data for editing
+    document.querySelectorAll('.edit-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const member = JSON.parse(button.getAttribute('data-member'));
+            openModal(member);
+        });
+    });
+</script>
+</html>
