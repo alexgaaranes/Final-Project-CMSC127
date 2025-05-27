@@ -357,3 +357,15 @@ def org_edit_member():
 
     member.edit_org_member(member_id, org_name, sem, ay, role, committee, status)
     return redirect(url_for('main.org_members'))
+
+# mark a fee as paid
+@main_bp.route('/org/mark_fee_paid', methods=['POST'])
+def org_mark_fee_paid():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    std_num = request.form.get('std_num')
+    fee_id = request.form.get('fee_id')
+
+    fees.mark_fee_paid(std_num, fee_id)
+
+    return redirect(url_for('main.org_funds'))

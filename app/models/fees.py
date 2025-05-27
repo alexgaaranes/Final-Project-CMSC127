@@ -150,3 +150,25 @@ def add_org_fee(fee_name, amount, due_date, fee_sem, fee_acad_year, org_name):
     
     print(cursor.fetchall())
     get_conn().commit()
+
+# mark as paid a fee based on studnum and id
+def mark_fee_paid(std_num, fee_id):
+    cursor = get_cursor()
+    
+    cursor.execute(
+        """
+        UPDATE member_pays_fee
+        SET status = 'P', paid_date = CURDATE()
+        WHERE std_num = %s AND fee_id = %s;
+        """, (std_num, fee_id)
+    )
+    
+    cursor.execute(
+    """
+    SELECT *
+    FROM member_pays_fee  
+    """
+    )
+    
+    print(cursor.fetchall())
+    get_conn().commit()

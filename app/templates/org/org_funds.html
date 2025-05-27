@@ -113,6 +113,7 @@
                             <th class="py-2 px-4 text-left">Full Name</th>
                             <th class="py-2 px-4 text-left">Fee id</th>
                             <th class="py-2 px-4 text-left">Amount Due</th>
+                            <th class="py-2 px-4 text-left">Action</th> <!-- New column -->
                         </tr>
                     </thead>
                     <tbody>
@@ -122,10 +123,17 @@
                             <td class="py-2 px-4">{{ member.name }}</td>
                             <td class="py-2 px-4">{{ member.fee_id }}</td>
                             <td class="py-2 px-4">₱{{ member.amount }}</td>
+                            <td class="py-2 px-4">
+                                <form method="post" action="/org/mark_fee_paid" style="display:inline;">
+                                    <input type="hidden" name="std_num" value="{{ member.std_num }}">
+                                    <input type="hidden" name="fee_id" value="{{ member.fee_id }}">
+                                    <button type="submit" class="bg-emerald-500 text-white px-3 py-1 rounded hover:bg-emerald-700 text-xs">Mark as Paid</button>
+                                </form>
+                            </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="4" class="py-2 px-4 text-gray-500">No members to display.</td>
+                            <td colspan="5" class="py-2 px-4 text-gray-500">No members to display.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
