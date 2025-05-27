@@ -18,7 +18,6 @@ primary key(org_name)
 
 create or replace table member(
 std_num char(10),
-mem_username varchar(20),
 mem_password varchar(30),
 degree_program varchar(50) not null,
 gender varchar(10),
