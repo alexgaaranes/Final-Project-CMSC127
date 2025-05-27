@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
-from app.models import org, member
-from datetime import date
+from app.models import org, member, fees
 
 main_bp = Blueprint('main', __name__)
 
@@ -135,6 +134,15 @@ def org_members():
     members = member.get_member_from_org(org_name)
     return render_template('org/org_members.html', org=org_deets, members=members)
 
+@main_bp.route('/org/funds', methods=['GET'])
+def org_funds():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    return render_template('org/org_funds.html', org=org_deets)
+
+
 
 # Mem routes
 @main_bp.route('/mem/home', methods=['GET'])
@@ -187,3 +195,75 @@ def org_add_mem():
     print(result)
 
     return redirect(url_for('main.org_members'))
+
+# Org add fee post req
+@main_bp.route('/org/add_fee', methods=['POST'])
+def org_add_fee():
+    # Insert Query
+    org_deets = session['org']
+    fee_data = request.form
+
+    print(fee_data)
+    # Details for fee tuple
+    org_name = org_deets['org_name']
+    fee_name = fee_data['fee_name']
+    amount = fee_data['fee_amount']
+    due_date = fee_data['fee_due_date']
+    sem = fee_data['fee_semester']
+    ay = fee_data['fee_year_start'] + '-' + fee_data['fee_year_end']
+
+    result = fees.add_org_fee(fee_name, amount, due_date, sem, ay, org_name)
+
+    return redirect(url_for('main.org_funds'))
+
+# Org total unpaid and paid as of date
+@main_bp.route('/org/total_as_of', methods=['GET'])
+def org_total_as_of():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    as_of_date = request.args.get('as_of_date')
+    total_unpaid = fees.get_total_unpaid(org_name, as_of_date)['total_unpaid']
+    total_paid = fees.get_total_paid(org_name, as_of_date)['total_paid']
+
+    return render_template('org/org_funds.html', org=org_deets, total_unpaid=total_unpaid, total_paid=total_paid)
+
+# ORg unpaid members
+@main_bp.route('/org/unpaid_mems', methods=['GET'])
+def org_unpaid_mems():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    sem = request.args.get('unpaid_semester')
+    ay = request.args.get('unpaid_year_start') + '-' + request.args.get('unpaid_year_end')
+
+    unpaid_members = fees.get_unpaid_members(org_name, sem, ay)
+    return render_template('org/org_funds.html', org=org_deets, unpaid_members=unpaid_members)
+
+# org late payments
+@main_bp.route('/org/late_payments', methods=['GET'])
+def org_late_payments():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    sem = request.args.get('late_semester')
+    ay = request.args.get('late_year_start') + '-' + request.args.get('late_year_end')
+    late_payments = fees.get_late_payers(org_name, sem, ay)
+
+    return render_template('org/org_funds.html', org=org_deets, late_payments=late_payments)
+
+# org mem with highest debt
+@main_bp.route('/org/highest_debt_mems', methods=['GET'])
+def org_highest_debt_mems():
+    if 'org' not in session:
+        return redirect(url_for('main.org_login'))
+    org_deets = session['org']
+    org_name = org_deets['org_name']
+    sem = request.args.get('debt_semester')
+    ay = request.args.get('debt_year_start') + '-' + request.args.get('debt_year_end')
+    highest_debt_mems = fees.get_highest_debt_members(org_name, sem, ay)
+
+    return render_template('org/org_funds.html', org=org_deets, debt_members=highest_debt_mems)
