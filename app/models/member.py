@@ -1,7 +1,7 @@
 from app.db import get_cursor, get_conn
 
 
-def get_member_from_org(org_name, sem = "all", committee = "all", status = "all", batch = "all", gender = "all", role = "all", start = None, end = None):
+def get_member_from_org(org_name, sem = "all", committee = "all", status = "all", batch = "all", std_num = None, role = "all", start = None, end = None):
 
     cursor = get_cursor()
     
@@ -33,10 +33,9 @@ def get_member_from_org(org_name, sem = "all", committee = "all", status = "all"
     if role != "all" and role is not None:
         filters.append('AND role = "'+role+'"')
 
-    # M or F pero ? ung rn, actually dapat sex to
 
-    if gender != "all" and gender is not None:
-        filters.append('AND gender = "'+gender+'"')
+    if std_num is not None:
+        filters.append('AND std_num = "'+std_num+'"')
     
     # should place YEAR  
     if start is not None and end is not None:
@@ -67,6 +66,21 @@ def login_member(mem_username, mem_password):
         """, (mem_username, mem_password)
     )
     return cursor.fetchone()
+
+
+# Login member
+def delete_member(org_name, std_num):
+
+    cursor = get_cursor()
+    cursor.execute(
+        """
+        DELETE 
+        FROM organization_has_member
+        WHERE std_num = %s AND
+        org_name = %s;
+        """, (std_num, org_name)
+    )
+    get_conn().commit()
 
 
 # register a new student member

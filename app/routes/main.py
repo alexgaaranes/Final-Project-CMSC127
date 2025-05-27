@@ -135,7 +135,7 @@ def org_members():
     org_name = org_deets['org_name']
     coms = org.get_all_org_committees(org_name)
     
-    
+    std_num = request.form.get('std_search')
     role = request.form.get('role')
     sem = request.form.get('sem')
     status = request.form.get('status') 
@@ -146,11 +146,11 @@ def org_members():
     print(committee)
     
     if role is None or sem is None or status is None or committee is None or start is None or end is None:
-        filter = ["all", "all", "all", "all", 1900, 2100]
+        filter = ["all", "all", "all", "all", 1900, 2100, ""]
     else:
-        filter = [role, sem, status, committee, start, end]
+        filter = [role, sem, status, committee, start, end, std_num]
         
-    members = member.get_member_from_org(org_name, role=role, status=status, sem=sem, start=start, end=end)
+    members = member.get_member_from_org(org_name, role=role, status=status, sem=sem, start=start, end=end, std_num=std_num)
     return render_template('org/org_members.html', org=org_deets, members=members, filter=filter, coms = coms)
 
 
@@ -175,6 +175,20 @@ def org_fees():
     print(fee)
     return render_template('org/org_fees.html', org=org_deets, fees=fee, filter=filter)
 
+# Org add member post req
+@main_bp.route('/org/delete_member', methods=['POST'])
+def org_delete_mem():
+    # Insert Query
+    org_deets = session['org']
+    org_name = org_deets['org_name']    
+    # Details for organization_has_member tuple
+    std_num = request.form.get('deleted_id')
+
+    print(std_num)
+    member.delete_member(org_name, std_num)    
+
+    return redirect(url_for('main.org_members'))
+
 
 # Mem routes
 @main_bp.route('/mem/home', methods=['GET'])
@@ -184,7 +198,6 @@ def mem_home():
     mem_deets = session['member']
 
     return render_template('mem/mem_dashboard.html', member=mem_deets)
-
 
 @main_bp.route('/mem/orgs', methods=['GET'])
 def mem_orgs():
@@ -204,6 +217,8 @@ def mem_fees():
     result = member.get_member_fee(std_num)
     print(result)
     return render_template('mem/mem_fees.html', member=mem_deets, fees=result)
+
+
 
 # Org add member post req
 @main_bp.route('/org/add_member', methods=['POST'])
