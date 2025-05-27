@@ -1,7 +1,7 @@
 from app.db import get_cursor, get_conn
 
 
-def get_member_from_org(org_name, committee = None, status = None, batch = None, gender = None, role = None, start = None, end = None):
+def get_member_from_org(org_name, sem = "all", committee = "all", status = "all", batch = "all", gender = "all", role = "all", start = "all", end = "all"):
 
     cursor = get_cursor()
     
@@ -14,28 +14,32 @@ def get_member_from_org(org_name, committee = None, status = None, batch = None,
 
     query = "SELECT std_num, l_name, f_name, m_name, batch, role, status, gender, degree_program, committee_name FROM member NATURAL JOIN organization_has_member "   
     
-    if committee is not None:
+    
+    if sem != "all":
+        filters.append('AND mem_sem = "'+sem+'"')
+    
+    if committee != "all":
         filters.append('AND committee_name = "'+committee+'"')
     
     # active, inactive, alumni
-    if status is not None:
+    if status != "all":
         filters.append('AND status = "'+status+'"')
 
     # year number
-    if batch is not None:
+    if batch != "all":
         filters.append('AND batch = '+batch)
 
     
-    if role is not None:
+    if role != "all":
         filters.append('AND role = "'+role+'"')
 
     # M or F pero ? ung rn, actually dapat sex to
 
-    if gender is not None:
+    if gender != "all":
         filters.append('AND gender = "'+gender+'"')
     
     # should place YEAR  
-    if start is not None and end is not None:
+    if start != "all" and end != "all":
         filters.append('AND (CAST(substring(mem_acad_year, 1, 4) AS int)) BETWEEN'+start+' AND '+end)
     
     # joining of all filters togther

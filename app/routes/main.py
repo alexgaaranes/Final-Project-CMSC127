@@ -126,14 +126,30 @@ def org_home():
     org_deets = session['org']
     return render_template('org/org_dashboard.html', org=org_deets)
 
-@main_bp.route('/org/members', methods=['GET'])
+@main_bp.route('/org/members', methods=['GET', 'POST'])
 def org_members():
     if 'org' not in session:
         return redirect(url_for('main.org_login'))
     org_deets = session['org']
     org_name = org_deets['org_name']
-    members = member.get_member_from_org(org_name)
-    return render_template('org/org_members.html', org=org_deets, members=members)
+    coms = org.get_all_org_committees(org_name)
+    
+    
+    role = request.form.get('role')
+    sem = request.form.get('sem')
+    # year = request.form.get('year') if request.form.get('year') != "all" else None
+    status = request.form.get('status') 
+    committee = request.form.get('committee')
+    
+    print(committee)
+    
+    if role is None:
+        filter = ["all", "all", "all", "all"]
+    else:
+        filter = [role, sem, status, committee]
+        
+    members = member.get_member_from_org(org_name, role=role, status=status, sem=sem)
+    return render_template('org/org_members.html', org=org_deets, members=members, filter=filter, coms = coms)
 
 
 # Mem routes

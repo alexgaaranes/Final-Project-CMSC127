@@ -19,6 +19,8 @@
                 <a href="/org/home" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Homepage</a>
                 <a href="/org/members" class="py-4 px-4 bg-green-200 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Members</a>
                 <a href="/org/funds" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center">Funds</a>
+                <a href="/org/fees" class="py-4 px-4 rounded hover:bg-green-100 transition-colors font-medium w-full text-center {% if active_page == 'funds' %}bg-green-200 font-bold{% endif %}">Fees</a>
+
             </nav>
         </aside>
         <main class="flex-grow flex flex-col items-center justify-center p-8">
@@ -28,34 +30,44 @@
                     <button class="py-2 px-4 bg-blue-500 text-white mb-6 rounded add-button">Add Member</button>
                 </div>
                 <!-- Filters -->
+                <form action="/org/members" method="post" onsubmit ="preventDefault()">
                 <div class="mb-6 flex justify-between items-center">
                     <!--Role-->
                     <div class="flex gap-4">
-                        <input type="text" placeholder="Search by name" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d] w-64">
-                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                        <select id="role" name="role" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d] onChange">
+                            <option value="all">All Member Roles</option>
                             <option value="resident-member">Resident Member</option>
                             <option value="executive">Executive</option>
                         </select>
                         <!--Sem and Acad Year -->
-                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
-                            <option value="1st-sem">1st Semester</option>
-                            <option value="2nd-sem">2nd Semester</option>
+                        <select id="sem" name="sem" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="all">All Semesters</option>
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
                         </select>
-                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
-                            <!-- TODO: From founding date to present -->
-                            <option value="2023-2024">2023-2024</option>
-                            <option value="2024-2025">2024-2025</option>
-                            <option value="2025-2026">2025-2026</option>
-                        </select>
+                  
                         <!--Status-->
-                        <select class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
-                            <option value="all">All</option>
+                        <select id="status" name="status" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="all">All Status</option>
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                             <option value="alumni">Alumni</option>
                         </select>
+                         <select id="committee" name="committee" class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-[#6e101d]">
+                            <option value="all">All Committees</option>
+                            {% for com in coms %}
+                            <option value="{{ com.committee_name }}">{{ com.committee_name }}</option>
+                            {% else %}
+                            
+                            {% endfor %}
+                        </select>                       
                     </div>
+                    <button type="submit" class="py-2 px-4 bg-emerald-500 text-white rounded hover:bg-emerald-700">Filter</button>
+                 
                 </div>
+                
+
+                </form>
                 <div class="overflow-x-auto">
                     <!-- Create a table base on the sent data from the route (TODO: add filtering)-->
                     <table class="min-w-full bg-white border border-black rounded shadow">
@@ -186,7 +198,7 @@
         <p class="text-center text-gray-600">&copy; 2025 Tupperware. All rights reserved.</p>
     </footer>
 </body>
-<script>
+<script type="text/javascript">
     // Edit modal funcs
     function openEditModal(member) {
         document.getElementById('std_num').innerText = member.std_num;
@@ -222,5 +234,14 @@
             openAddModal();
         })
     })
+
+
+    filters = JSON.parse('{{ filter|tojson|safe }}')
+    document.getElementById("role").value = filters[0]
+    document.getElementById("sem").value = filters[1]
+    document.getElementById("status").value = filters[2]
+    document.getElementById("committee").value = filters[3]
+
+
 </script>
 </html>
